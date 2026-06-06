@@ -20,5 +20,8 @@ pnpm-debug.log*
 # macOS-specific files
 .DS_Store
 
+# direnv (configuración local de entorno)
+.envrc
+
 # jetbrains setting folder
 .idea/
