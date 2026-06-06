@@ -1,0 +1,116 @@
+---
+import type { Lang } from '../i18n/ui';
+import { useTranslations } from '../i18n/ui';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+const base = lang === 'en' ? '/en' : '';
+---
+<header class="nav">
+  <div class="container nav__inner">
+    <a href={lang === 'en' ? '/en/' : '/'} class="nav__logo" aria-label="Eco">
+      <img src="/app-icon.png" width="28" height="28" alt="Eco" class="nav__app-icon" />
+      <span>Eco</span>
+    </a>
+
+    <nav class="nav__links" aria-label={lang === 'en' ? 'Main navigation' : 'Navegación principal'}>
+      <a href={`${base}/#features`}>{t.nav.features}</a>
+      <a href={`${base}/#pricing`}>{t.nav.pricing}</a>
+      <a href={`${base}/#faq`}>{t.nav.faq}</a>
+    </nav>
+
+    <div class="nav__actions">
+      <a href="#" class="btn btn-primary btn--sm" data-coming-soon>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        {t.nav.download}
+      </a>
+      <button class="nav__burger" aria-label={lang === 'en' ? 'Open menu' : 'Abrir menú'} aria-expanded="false">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<style>
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding-block: 18px;
+  transition: background 0.3s, border-color 0.3s;
+}
+.nav.scrolled {
+  background: rgba(7 5 14 / 0.88);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  padding-block: 12px;
+}
+.nav__inner {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.nav__logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  flex-shrink: 0;
+}
+.nav__app-icon {
+  border-radius: 7px;
+  display: block;
+}
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin-right: auto;
+}
+.nav__links a {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: color 0.15s;
+}
+.nav__links a:hover { color: var(--text); }
+.nav__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.btn--sm {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+.nav__burger {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+}
+
+@media (max-width: 640px) {
+  .nav__links { display: none; }
+  .nav__burger { display: flex; }
+}
+</style>
+
+<script>
+  const nav = document.querySelector('.nav');
+  window.addEventListener('scroll', () => {
+    nav?.classList.toggle('scrolled', window.scrollY > 24);
+  }, { passive: true });
+</script>

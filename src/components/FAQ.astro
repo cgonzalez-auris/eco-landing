@@ -1,0 +1,133 @@
+---
+import type { Lang } from '../i18n/ui';
+import { useTranslations } from '../i18n/ui';
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const t = useTranslations(lang).faq;
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: t.items.map(item => ({
+    '@type': 'Question',
+    name: item.q,
+    acceptedAnswer: { '@type': 'Answer', text: item.a },
+  })),
+};
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+<section class="section faq" id="faq">
+  <div class="container faq__inner">
+    <div class="faq__left">
+      <div class="section-label">{t.label}</div>
+      <h2 class="faq__title reveal">
+        {t.title.split('\n').map((line, i) => (
+          <>{line}{i < t.title.split('\n').length - 1 && <br/>}</>
+        ))}
+      </h2>
+      <p class="faq__sub reveal">
+        {t.contactText}
+        <a href={`mailto:${t.email}`}>{t.email}</a>
+      </p>
+    </div>
+
+    <div class="faq__list">
+      {t.items.map((item, i) => (
+        <details class="faq-item reveal" style={`animation-delay: ${i * 0.05}s`}>
+          <summary class="faq-item__q">
+            {item.q}
+            <svg class="faq-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </summary>
+          <p class="faq-item__a">{item.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+.faq__inner {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: clamp(40px, 6vw, 80px);
+  align-items: start;
+}
+
+.faq__title {
+  font-size: clamp(30px, 3.5vw, 44px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin-bottom: 16px;
+  line-height: 1.05;
+}
+
+.faq__sub {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+.faq__sub a {
+  color: var(--cyan);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.faq__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+
+.faq-item {
+  border-bottom: 1px solid var(--border);
+}
+.faq-item:last-child { border-bottom: none; }
+
+.faq-item__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+  color: var(--text);
+  transition: color 0.15s, background 0.15s;
+  user-select: none;
+}
+.faq-item__q::-webkit-details-marker { display: none; }
+.faq-item__q:hover { background: rgba(255 255 255 / 0.03); }
+
+.faq-icon {
+  flex-shrink: 0;
+  color: var(--text-faint);
+  transition: transform 0.25s ease;
+}
+.faq-item[open] .faq-icon { transform: rotate(180deg); }
+.faq-item[open] .faq-item__q { color: var(--cyan); }
+
+.faq-item__a {
+  padding: 0 24px 20px;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.75;
+  animation: fadeDown 0.2s ease;
+}
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (max-width: 820px) {
+  .faq__inner { grid-template-columns: 1fr; }
+}
+</style>

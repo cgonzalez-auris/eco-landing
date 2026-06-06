@@ -1,0 +1,159 @@
+---
+import type { Lang } from '../i18n/ui';
+import { useTranslations } from '../i18n/ui';
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const t = useTranslations(lang).footer;
+const year = new Date().getFullYear();
+const base = lang === 'en' ? '/en' : '';
+const privacyPath = lang === 'en' ? '/en/privacy' : '/privacy';
+const termsPath   = lang === 'en' ? '/en/terms'   : '/terms';
+---
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <a href={lang === 'en' ? '/en/' : '/'} class="footer__logo" aria-label="Eco">
+        <img src="/app-icon.png" width="28" height="28" alt="Eco" style="border-radius:7px;display:block" />
+        <span>Eco</span>
+      </a>
+      <p class="footer__tagline">
+        {t.tagline.split('\n').map((line, i) => (
+          <>{line}{i < t.tagline.split('\n').length - 1 && <br/>}</>
+        ))}
+      </p>
+      <p class="footer__paddle">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        {t.paddleNote}
+      </p>
+    </div>
+
+    <nav class="footer__nav" aria-label={lang === 'en' ? 'Footer navigation' : 'Navegación del footer'}>
+      <div class="footer__nav-col">
+        <span class="footer__nav-heading">{t.product}</span>
+        <a href={`${base}/#features`}>{t.features}</a>
+        <a href={`${base}/#how-it-works`}>{t.howItWorks}</a>
+        <a href={`${base}/#pricing`}>{t.pricing}</a>
+        <a href={`${base}/#faq`}>{t.faq}</a>
+      </div>
+      <div class="footer__nav-col">
+        <span class="footer__nav-heading">{t.legal}</span>
+        <a href={privacyPath}>{t.privacy}</a>
+        <a href={termsPath}>{t.terms}</a>
+      </div>
+      <div class="footer__nav-col">
+        <span class="footer__nav-heading">{t.support}</span>
+        <a href={`mailto:${t.email}`}>{t.email}</a>
+      </div>
+    </nav>
+  </div>
+
+  <div class="footer__bottom">
+    <div class="container">
+      <p>© {year} {t.copyright}</p>
+      <p class="footer__system">{t.macos}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+.footer {
+  border-top: 1px solid var(--border);
+  background: rgba(255 255 255 / 0.015);
+  padding-top: clamp(48px, 6vw, 80px);
+}
+
+.footer__inner {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: clamp(40px, 6vw, 80px);
+  padding-bottom: 48px;
+}
+
+.footer__logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+  width: fit-content;
+}
+
+.footer__tagline {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.65;
+  margin-bottom: 16px;
+}
+
+.footer__paddle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.footer__nav {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.footer__nav-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer__nav-heading {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 4px;
+}
+
+.footer__nav-col a {
+  font-size: 14px;
+  color: var(--text-muted);
+  transition: color 0.15s;
+  width: fit-content;
+}
+.footer__nav-col a:hover { color: var(--text); }
+
+.footer__bottom {
+  border-top: 1px solid var(--border);
+  padding-block: 18px;
+}
+.footer__bottom .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.footer__bottom p {
+  font-size: 13px;
+  color: var(--text-faint);
+}
+
+.footer__system {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 820px) {
+  .footer__inner { grid-template-columns: 1fr; }
+  .footer__nav { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 500px) {
+  .footer__nav { grid-template-columns: 1fr; }
+  .footer__bottom .container { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
+</style>

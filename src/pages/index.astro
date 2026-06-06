@@ -1,0 +1,36 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import Features from '../components/Features.astro';
+import HowItWorks from '../components/HowItWorks.astro';
+import Pricing from '../components/Pricing.astro';
+import FAQ from '../components/FAQ.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+---
+
+<Layout lang="es" canonical="https://ecotranslate.app/">
+  <Nav lang="es" />
+  <main>
+    <Hero lang="es" />
+    <Features lang="es" />
+    <div class="section-divider"></div>
+    <HowItWorks lang="es" />
+    <div class="section-divider"></div>
+    <Pricing lang="es" />
+    <div class="section-divider"></div>
+    <FAQ lang="es" />
+  </main>
+  <Footer lang="es" />
+</Layout>
+
+<style>
+.section-divider {
+  max-width: var(--max-w);
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 48px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255 255 255 / 0.08) 30%, rgba(255 255 255 / 0.08) 70%, transparent);
+}
+</style>
