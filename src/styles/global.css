@@ -1,0 +1,196 @@
+/* ─── Reset & Base ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Colors — palette extraída del icono: fondo negro-violeta, neon lavanda */
+  --bg:          #07050E;
+  --bg-surface:  #0D0A1C;
+  --bg-card:     rgba(255 255 255 / 0.04);
+  --border:      rgba(200 180 255 / 0.08);
+  --border-hi:   rgba(200 180 255 / 0.16);
+
+  /* Acento primario: lavanda/violeta neon (tono del glow del icono) */
+  --cyan:        #A78BFA;
+  --cyan-dim:    rgba(167 139 250 / 0.15);
+  /* Acento secundario: violeta profundo */
+  --indigo:      #7C3AED;
+  --indigo-dim:  rgba(124 58 237 / 0.15);
+  /* Éxito / confirmación */
+  --emerald:     #34D399;
+  --emerald-dim: rgba(52 211 153 / 0.12);
+  --amber:       #FBBF24;
+  /* Brillo blanco-lavanda (núcleo del neon) */
+  --white-glow:  #EDE9FE;
+
+  --text:        #F0ECFF;
+  --text-muted:  rgba(240 236 255 / 0.55);
+  --text-faint:  rgba(240 236 255 / 0.3);
+
+  /* Typography */
+  --font-display: 'Montserrat', system-ui, sans-serif;
+  --font-body:    'Nunito', system-ui, sans-serif;
+  --font-mono:    'Space Mono', monospace;
+
+  /* Spacing */
+  --max-w: 1160px;
+  --section-py: clamp(64px, 7vw, 100px);
+  --gap: clamp(16px, 2vw, 24px);
+
+  /* Radii */
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 22px;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ─── Typography ───────────────────────────────────────────────────── */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+a { color: inherit; text-decoration: none; }
+
+img, svg { display: block; max-width: 100%; }
+
+/* ─── Layout helpers ───────────────────────────────────────────────── */
+.container {
+  width: 100%;
+  max-width: var(--max-w);
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 48px);
+}
+
+.section {
+  padding-block: var(--section-py);
+}
+
+/* ─── Gradient text ─────────────────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #C4B5FD 0%, #A78BFA 50%, #EDE9FE 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 6s linear infinite;
+}
+
+@keyframes shimmer {
+  to { background-position: 200% center; }
+}
+
+/* ─── Glassmorphism card ────────────────────────────────────────────── */
+.glass-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* ─── Pill badge ────────────────────────────────────────────────────── */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ─── Button ────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--r-sm);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+  text-decoration: none;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+
+.btn-primary {
+  background: linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%);
+  color: #fff;
+  box-shadow: 0 4px 24px rgba(124 58 237 / 0.4);
+}
+.btn-primary:hover { box-shadow: 0 8px 32px rgba(124 58 237 / 0.6); }
+
+.btn-ghost {
+  background: var(--bg-card);
+  color: var(--text);
+  border: 1px solid var(--border-hi);
+}
+.btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* ─── Section header ─────────────────────────────────────────────────── */
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #C4B5FD;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-label::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: #A78BFA;
+  opacity: 0.6;
+}
+
+/* ─── Divider ────────────────────────────────────────────────────────── */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border-hi) 30%, var(--border-hi) 70%, transparent);
+  margin-block: 0;
+}
+
+/* ─── Scroll reveal ──────────────────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ─── Responsive ────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  :root { --section-py: 64px; }
+}

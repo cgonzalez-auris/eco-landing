@@ -1,0 +1,383 @@
+export type Lang = 'es' | 'en';
+
+export const ui = {
+  es: {
+    seo: {
+      home: {
+        title: 'Eco — Transcripción y Traducción en Tiempo Real para macOS',
+        description: 'Eco captura el audio de tu micrófono y del sistema y genera subtítulos automáticos en tiempo real. Transcripción y traducción simultánea para reuniones, clases y videos en otro idioma. macOS 14.4+',
+      },
+      privacy: {
+        title: 'Política de Privacidad — Eco',
+        description: 'Política de privacidad de Eco, aplicación de transcripción y traducción en tiempo real para macOS.',
+      },
+      terms: {
+        title: 'Términos de Servicio — Eco',
+        description: 'Términos y condiciones de uso de Eco, aplicación de transcripción y traducción en tiempo real para macOS.',
+      },
+    },
+    nav: {
+      features: 'Características',
+      pricing: 'Precios',
+      faq: 'FAQ',
+      download: 'Descargar',
+    },
+    hero: {
+      pill: 'Disponible para macOS 14.4+',
+      title1: 'Ellos hablan',
+      title2: 'otro idioma.',
+      titleAccent: 'Tú lo entiendes igual.',
+      subtitle: 'Para reuniones, clases y videos en otro idioma. Abre la app, activa la captura, y lee las captions en tu idioma en tiempo real.',
+      cta1: 'Descargar gratis',
+      cta2: 'Ver planes',
+      note: '10 minutos gratuitos al mes · Sin tarjeta requerida',
+      windowTitle: 'Eco — En vivo',
+      captionSource: 'Inglés — Micrófono',
+      captionTranslationLabel: 'Traducción al español',
+      captionOriginal: "Good morning. Before we start the meeting, I'd like to thank the entire team for their effort these past weeks.",
+      captionTranslation: 'Buenos días. Antes de comenzar la reunión, me gustaría agradecer a todo el equipo por el esfuerzo de estas semanas.',
+      captionFooter: 'Transcripción + Traducción IA',
+    },
+    features: {
+      label: 'Características',
+      title: 'Diseñado para\nentender sin esfuerzo.',
+      cards: [
+        {
+          title: 'Dual-stream simultáneo',
+          desc: 'Captura el micrófono y el audio del sistema por separado al mismo tiempo — todo transcrito sin mezclar fuentes.',
+        },
+        {
+          title: 'Traducción en tiempo real',
+          desc: 'Cada oración aparece traducida al instante, palabra a palabra, mientras el audio aún suena. Sin esperar a que termine la frase.',
+        },
+        {
+          title: 'Más de 40 idiomas',
+          desc: 'Subtítulos automáticos en español, inglés, francés, japonés, chino, portugués y decenas más. Detección automática o configuración manual en un clic.',
+        },
+      ],
+    },
+    hiw: {
+      label: 'Cómo funciona',
+      title: 'Tres pasos. Después,\nya no piensas en ello.',
+      steps: [
+        {
+          n: '01',
+          title: 'Instala Eco',
+          desc: 'Descarga el archivo .dmg, arrastra Eco a Aplicaciones. Inicia sesión con tu cuenta de Google — listo en menos de 2 minutos.',
+        },
+        {
+          n: '02',
+          title: 'Captura el audio',
+          desc: 'Elige fuente: micrófono, audio del sistema, o ambos. Presiona el botón de grabación desde la barra de menú — Eco empieza a escuchar al instante.',
+        },
+        {
+          n: '03',
+          title: 'Entiende al instante',
+          desc: 'Las captions aparecen en tiempo real sobre cualquier ventana. Transcripción y traducción simultáneas, sin interrumpir lo que estás haciendo.',
+        },
+      ],
+    },
+    pricing: {
+      label: 'Precios',
+      title: 'Transparente. Sin sorpresas.',
+      subtitle: 'Cancela cuando quieras. Pagos procesados de forma segura por Paddle.',
+      billingMonthly: 'Mensual',
+      billingAnnual: 'Anual',
+      saveBadge: 'Ahorra 17%',
+      footerNote: 'Pagos procesados por Paddle · Cancela en cualquier momento',
+      plans: [
+        {
+          id: 'free',
+          name: 'Gratuito',
+          priceMonthly: 0,
+          priceAnnual: 0,
+          minutes: '10 min / mes',
+          desc: 'Para conocer Eco antes de comprometerte.',
+          cta: 'Comenzar gratis',
+          features: [
+            { text: '10 minutos de grabación al mes', ok: true },
+            { text: 'Transcripción en tiempo real', ok: true },
+            { text: 'Traducción a 1 idioma', ok: true },
+            { text: 'Captions sobre cualquier app', ok: true },
+            { text: 'Dual-stream (mic + sistema)', ok: false },
+            { text: 'Historial de sesiones', ok: false },
+          ],
+        },
+        {
+          id: 'lite',
+          name: 'Lite',
+          priceMonthly: 8.99,
+          priceAnnual: 6.58,
+          annualTotal: 79,
+          minutes: '300 min / mes',
+          desc: 'Para uso regular: reuniones, clases y contenido.',
+          cta: 'Comenzar con Lite',
+          badge: null,
+          features: [
+            { text: '300 minutos de grabación al mes', ok: true },
+            { text: 'Transcripción en tiempo real', ok: true },
+            { text: 'Traducción a todos los idiomas', ok: true },
+            { text: 'Dual-stream (mic + sistema)', ok: true },
+            { text: 'Captions sobre cualquier app', ok: true },
+            { text: 'Historial de sesiones', ok: true },
+          ],
+        },
+        {
+          id: 'pro',
+          name: 'Pro',
+          priceMonthly: 19.99,
+          priceAnnual: 14.58,
+          annualTotal: 175,
+          minutes: '1,000 min / mes',
+          desc: 'Para uso intensivo y profesionales del idioma.',
+          cta: 'Comenzar con Pro',
+          badge: 'Más popular',
+          features: [
+            { text: '1.000 minutos de grabación al mes', ok: true },
+            { text: 'Todo lo de Lite incluido', ok: true },
+            { text: '~16 h de grabación al mes', ok: true },
+            { text: 'Prioridad en soporte', ok: true },
+            { text: 'Acceso anticipado a funciones', ok: true },
+            { text: 'Historial ilimitado de sesiones', ok: true },
+          ],
+        },
+      ],
+    },
+    faq: {
+      label: 'FAQ',
+      title: 'Preguntas\nfrecuentes',
+      contactText: '¿No encuentras lo que buscas? Escríbenos a',
+      email: 'hola@ecotranslate.app',
+      items: [
+        {
+          q: '¿Qué es Eco?',
+          a: 'Eco es una aplicación para la barra de menú de macOS que captura el audio de tu micrófono y del sistema al mismo tiempo, lo transcribe y traduce en tiempo real con IA. Está pensada para personas que necesitan entender audio en otro idioma sin interrumpir su flujo de trabajo.',
+        },
+        {
+          q: '¿Qué idiomas soporta?',
+          a: 'Eco soporta más de 40 idiomas, incluyendo español, inglés, francés, alemán, italiano, portugués, japonés, chino simplificado, coreano, árabe y muchos más. La detección del idioma es automática.',
+        },
+        {
+          q: '¿Funciona sin conexión a internet?',
+          a: 'No, Eco requiere conexión a internet. La transcripción y la traducción se procesan en la nube con una latencia típica menor a 500ms desde que terminas de hablar hasta que aparece el texto.',
+        },
+        {
+          q: '¿Puedo cancelar mi plan en cualquier momento?',
+          a: 'Sí, sin permanencia ni penalizaciones. Puedes cancelar desde el portal de Paddle (que te llega por email al comprar) o desde la configuración de Eco. Al cancelar, tu plan sigue activo hasta el final del período que ya pagaste.',
+        },
+        {
+          q: '¿En qué versiones de macOS funciona?',
+          a: 'Eco requiere macOS 14.4 (Sonoma) o superior. No hay versión para iOS, Windows ni Linux.',
+        },
+      ],
+    },
+    footer: {
+      tagline: 'Transcripción y traducción\nen tiempo real para macOS.',
+      paddleNote: 'Pagos procesados por Paddle',
+      product: 'Producto',
+      legal: 'Legal',
+      support: 'Soporte',
+      features: 'Características',
+      howItWorks: 'Cómo funciona',
+      pricing: 'Precios',
+      faq: 'FAQ',
+      privacy: 'Política de privacidad',
+      terms: 'Términos de servicio',
+      copyright: 'Eco.',
+      macos: 'macOS 14.4+',
+      email: 'hola@ecotranslate.app',
+    },
+  },
+
+  en: {
+    seo: {
+      home: {
+        title: 'Eco — Real-Time Transcription & Translation for macOS',
+        description: 'Eco captures your microphone and system audio and generates live captions with real-time translation. Auto subtitles for meetings, classes, and videos in another language. macOS 14.4+',
+      },
+      privacy: {
+        title: 'Privacy Policy — Eco',
+        description: 'Privacy policy for Eco, the real-time transcription and translation app for macOS.',
+      },
+      terms: {
+        title: 'Terms of Service — Eco',
+        description: 'Terms and conditions of use for Eco, the real-time transcription and translation app for macOS.',
+      },
+    },
+    nav: {
+      features: 'Features',
+      pricing: 'Pricing',
+      faq: 'FAQ',
+      download: 'Download',
+    },
+    hero: {
+      pill: 'Available for macOS 14.4+',
+      title1: 'They speak',
+      title2: 'another language.',
+      titleAccent: 'You understand them anyway.',
+      subtitle: 'For meetings, classes, and videos in another language. Open the app, start capturing, and read captions in your language in real time.',
+      cta1: 'Download free',
+      cta2: 'See plans',
+      note: '10 free minutes per month · No credit card required',
+      windowTitle: 'Eco — Live',
+      captionSource: 'Spanish — Microphone',
+      captionTranslationLabel: 'Translation to English',
+      captionOriginal: 'Buenos días. Antes de comenzar la reunión, me gustaría agradecer a todo el equipo por el esfuerzo de estas semanas.',
+      captionTranslation: "Good morning. Before we start the meeting, I'd like to thank the entire team for their effort these past weeks.",
+      captionFooter: 'Transcription + AI Translation',
+    },
+    features: {
+      label: 'Features',
+      title: 'Built to understand\nwithout effort.',
+      cards: [
+        {
+          title: 'Simultaneous dual-stream',
+          desc: 'Captures microphone and system audio separately at the same time — everything transcribed without mixing sources.',
+        },
+        {
+          title: 'Real-time translation',
+          desc: 'Every sentence appears translated instantly, word by word, while the audio is still playing. No waiting for the sentence to end.',
+        },
+        {
+          title: 'Over 40 languages',
+          desc: 'Live captions in Spanish, English, French, Japanese, Chinese, Portuguese and dozens more. Automatic detection or manual setup in one click.',
+        },
+      ],
+    },
+    hiw: {
+      label: 'How it works',
+      title: 'Three steps. After that,\nyou stop thinking about it.',
+      steps: [
+        {
+          n: '01',
+          title: 'Install Eco',
+          desc: 'Download the .dmg file and drag Eco to Applications. Sign in with your Google account — ready in under 2 minutes.',
+        },
+        {
+          n: '02',
+          title: 'Capture audio',
+          desc: 'Choose your source: microphone, system audio, or both. Press the record button from the menu bar — Eco starts listening instantly.',
+        },
+        {
+          n: '03',
+          title: 'Understand instantly',
+          desc: 'Captions appear in real time on top of any window. Simultaneous transcription and translation, without interrupting what you\'re doing.',
+        },
+      ],
+    },
+    pricing: {
+      label: 'Pricing',
+      title: 'Transparent. No surprises.',
+      subtitle: 'Cancel anytime. Payments securely processed by Paddle.',
+      billingMonthly: 'Monthly',
+      billingAnnual: 'Annual',
+      saveBadge: 'Save 17%',
+      footerNote: 'Payments processed by Paddle · Cancel anytime',
+      plans: [
+        {
+          id: 'free',
+          name: 'Free',
+          priceMonthly: 0,
+          priceAnnual: 0,
+          minutes: '10 min / mo',
+          desc: 'Try Eco before committing.',
+          cta: 'Get started free',
+          features: [
+            { text: '10 minutes of recording per month', ok: true },
+            { text: 'Real-time transcription', ok: true },
+            { text: 'Translation to 1 language', ok: true },
+            { text: 'Captions over any app', ok: true },
+            { text: 'Dual-stream (mic + system)', ok: false },
+            { text: 'Session history', ok: false },
+          ],
+        },
+        {
+          id: 'lite',
+          name: 'Lite',
+          priceMonthly: 8.99,
+          priceAnnual: 6.58,
+          annualTotal: 79,
+          minutes: '300 min / mo',
+          desc: 'For regular use: meetings, classes, and content.',
+          cta: 'Get Lite',
+          badge: null,
+          features: [
+            { text: '300 minutes of recording per month', ok: true },
+            { text: 'Real-time transcription', ok: true },
+            { text: 'Translation to all languages', ok: true },
+            { text: 'Dual-stream (mic + system)', ok: true },
+            { text: 'Captions over any app', ok: true },
+            { text: 'Session history', ok: true },
+          ],
+        },
+        {
+          id: 'pro',
+          name: 'Pro',
+          priceMonthly: 19.99,
+          priceAnnual: 14.58,
+          annualTotal: 175,
+          minutes: '1,000 min / mo',
+          desc: 'For heavy use and language professionals.',
+          cta: 'Get Pro',
+          badge: 'Most popular',
+          features: [
+            { text: '1,000 minutes of recording per month', ok: true },
+            { text: 'Everything in Lite included', ok: true },
+            { text: '~16 h of recording per month', ok: true },
+            { text: 'Priority support', ok: true },
+            { text: 'Early access to new features', ok: true },
+            { text: 'Unlimited session history', ok: true },
+          ],
+        },
+      ],
+    },
+    faq: {
+      label: 'FAQ',
+      title: 'Frequently asked\nquestions',
+      contactText: "Can't find what you're looking for? Email us at",
+      email: 'hello@ecotranslate.app',
+      items: [
+        {
+          q: 'What is Eco?',
+          a: 'Eco is a macOS menu bar app that captures your microphone and system audio simultaneously, transcribes and translates in real time with AI. Built for people who need to understand audio in another language without disrupting their workflow.',
+        },
+        {
+          q: 'What languages does it support?',
+          a: 'Eco supports over 40 languages, including Spanish, English, French, German, Italian, Portuguese, Japanese, Simplified Chinese, Korean, Arabic, and many more. Language detection is automatic.',
+        },
+        {
+          q: 'Does it work offline?',
+          a: 'No, Eco requires an internet connection. Transcription and translation are processed in the cloud with a typical latency under 500ms from when you finish speaking to when the text appears.',
+        },
+        {
+          q: 'Can I cancel my plan at any time?',
+          a: 'Yes, with no lock-in or penalties. You can cancel from the Paddle portal (link sent in your purchase confirmation email) or from within Eco settings. After canceling, your plan stays active until the end of the period you already paid for.',
+        },
+        {
+          q: 'Which macOS versions are supported?',
+          a: 'Eco requires macOS 14.4 (Sonoma) or later. There is no iOS, Windows, or Linux version.',
+        },
+      ],
+    },
+    footer: {
+      tagline: 'Real-time transcription and\ntranslation for macOS.',
+      paddleNote: 'Payments processed by Paddle',
+      product: 'Product',
+      legal: 'Legal',
+      support: 'Support',
+      features: 'Features',
+      howItWorks: 'How it works',
+      pricing: 'Pricing',
+      faq: 'FAQ',
+      privacy: 'Privacy Policy',
+      terms: 'Terms of Service',
+      copyright: 'Eco.',
+      macos: 'macOS 14.4+',
+      email: 'hello@ecotranslate.app',
+    },
+  },
+} as const;
+
+export function useTranslations(lang: Lang) {
+  return ui[lang];
+}

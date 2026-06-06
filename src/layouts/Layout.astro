@@ -1,0 +1,233 @@
+---
+import type { Lang } from '../i18n/ui';
+
+export interface Props {
+  lang?: Lang;
+  title?: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+}
+
+const {
+  lang = 'es',
+  title = lang === 'en'
+    ? 'Eco — Real-Time Transcription & Translation for macOS'
+    : 'Eco — Transcripción y Traducción en Tiempo Real para macOS',
+  description = lang === 'en'
+    ? 'Eco captures your microphone and system audio, transcribes and translates in real time. For meetings, classes, and videos in another language. macOS 14.4+'
+    : 'Eco captura el audio de tu micrófono y del sistema, transcribe y traduce en tiempo real. Para reuniones, clases y videos en otro idioma. macOS 14.4+',
+  canonical = Astro.url.href,
+  ogImage = '/og-image.png',
+} = Astro.props;
+
+const siteUrl = 'https://ecotranslate.app';
+const ogImageAbsolute = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`;
+const ogLocale = lang === 'en' ? 'en_US' : 'es_ES';
+
+const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '/en/';
+const altEs = `${siteUrl}/`;
+const altEn = `${siteUrl}/en/`;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Eco',
+  operatingSystem: 'macOS 14.4+',
+  applicationCategory: 'ProductivityApplication',
+  description,
+  url: siteUrl,
+  offers: [
+    { '@type': 'Offer', name: lang === 'en' ? 'Free' : 'Gratuito', price: '0', priceCurrency: 'USD' },
+    { '@type': 'Offer', name: 'Lite', price: '8.99', priceCurrency: 'USD', billingIncrement: 'P1M' },
+    { '@type': 'Offer', name: 'Pro', price: '19.99', priceCurrency: 'USD', billingIncrement: 'P1M' },
+  ],
+};
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#07050E" />
+
+    <!-- SEO Primary -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- Hreflang alternates -->
+    <link rel="alternate" hreflang="es" href={altEs} />
+    <link rel="alternate" hreflang="en" href={altEn} />
+    <link rel="alternate" hreflang="x-default" href={altEs} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageAbsolute} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="Eco" />
+    <meta property="og:locale" content={ogLocale} />
+    {lang === 'en'
+      ? <meta property="og:locale:alternate" content="es_ES" />
+      : <meta property="og:locale:alternate" content="en_US" />
+    }
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageAbsolute} />
+
+    <!-- Robots -->
+    <meta name="robots" content="index, follow" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/app-icon.png" sizes="128x128" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Fonts: Montserrat (display) + Nunito (body) + Space Mono (code labels) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,500;0,600;0,700;0,800;0,900;1,700&family=Nunito:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body>
+    <slot />
+
+    <!-- Modal "muy pronto disponible" -->
+    <div id="cs-modal" class="cs-overlay" role="dialog" aria-modal="true" aria-labelledby="cs-title">
+      <div class="cs-card">
+        <button class="cs-close" id="cs-close" aria-label={lang === 'en' ? 'Close' : 'Cerrar'}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <div class="cs-icon" aria-hidden="true">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h2 id="cs-title" class="cs-title">
+          {lang === 'en' ? 'Coming soon' : 'Muy pronto disponible'}
+        </h2>
+        <p class="cs-sub">
+          {lang === 'en'
+            ? "We're getting ready for launch. Thanks for your interest!"
+            : '¡Estamos preparando el lanzamiento. Gracias por tu interés!'}
+        </p>
+      </div>
+    </div>
+
+    <style>
+      .cs-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        background: rgba(7 5 14 / 0.75);
+        backdrop-filter: blur(8px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+      }
+      .cs-overlay.cs-open {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .cs-card {
+        position: relative;
+        background: rgba(13 10 26 / 0.95);
+        border: 1px solid rgba(167 139 250 / 0.25);
+        border-radius: 20px;
+        padding: 48px 40px 40px;
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+        box-shadow:
+          0 0 0 1px rgba(167 139 250 / 0.08),
+          0 32px 80px rgba(0 0 0 / 0.7);
+        transform: scale(0.92);
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .cs-overlay.cs-open .cs-card {
+        transform: scale(1);
+      }
+      .cs-close {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        background: rgba(255 255 255 / 0.05);
+        border: 1px solid rgba(255 255 255 / 0.08);
+        border-radius: 8px;
+        color: var(--text-faint, #6b7280);
+        cursor: pointer;
+        padding: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.15s, background 0.15s;
+      }
+      .cs-close:hover {
+        color: #fff;
+        background: rgba(255 255 255 / 0.1);
+      }
+      .cs-icon {
+        color: #A78BFA;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: center;
+      }
+      .cs-title {
+        font-family: var(--font-display, 'Montserrat', sans-serif);
+        font-size: clamp(22px, 4vw, 28px);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        color: #fff;
+        margin-bottom: 12px;
+        line-height: 1.2;
+      }
+      .cs-sub {
+        font-size: 15px;
+        color: var(--text-muted, #9ca3af);
+        line-height: 1.6;
+      }
+    </style>
+
+    <!-- Scroll reveal -->
+    <script>
+      const observer = new IntersectionObserver(
+        (entries) => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+        { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+      );
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    </script>
+
+    <script>
+      const modal = document.getElementById('cs-modal');
+      function openModal() {
+        modal?.classList.add('cs-open');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeModal() {
+        modal?.classList.remove('cs-open');
+        document.body.style.overflow = '';
+      }
+      document.querySelectorAll('[data-coming-soon]').forEach(btn => {
+        btn.addEventListener('click', e => { e.preventDefault(); openModal(); });
+      });
+      document.getElementById('cs-close')?.addEventListener('click', closeModal);
+      modal?.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    </script>
+  </body>
+</html>

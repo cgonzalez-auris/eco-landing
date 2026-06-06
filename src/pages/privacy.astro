@@ -1,0 +1,210 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+const lastUpdated = '2 de junio de 2025';
+---
+
+<Layout lang="es" title="Política de Privacidad — Eco" description="Política de privacidad de Eco, aplicación de transcripción y traducción en tiempo real para macOS." canonical="https://ecotranslate.app/privacy">
+  <Nav lang="es" />
+  <main class="legal-page">
+    <div class="container">
+      <div class="legal-header">
+        <a href="/" class="back-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+          Volver al inicio
+        </a>
+        <h1>Política de Privacidad</h1>
+        <p class="legal-meta">Última actualización: {lastUpdated}</p>
+      </div>
+
+      <div class="legal-body">
+
+        <section>
+          <h2>1. Qué información recopilamos</h2>
+          <h3>1.1 Información de cuenta</h3>
+          <p>Al crear una cuenta mediante Google Sign-In, recopilamos tu nombre, dirección de correo electrónico y foto de perfil proporcionados por Google.</p>
+          <h3>1.2 Datos de uso</h3>
+          <p>Registramos métricas agregadas de uso: minutos de grabación consumidos por período, número de tokens de traducción utilizados y el plan activo. Esta información es necesaria para la gestión de cuotas y facturación.</p>
+          <h3>1.3 Datos de audio y transcripción</h3>
+          <p>El audio capturado por Eco se transmite de forma cifrada a nuestros proveedores de procesamiento de IA para su transcripción. <strong>No almacenamos ni tenemos acceso a las grabaciones de audio.</strong> Las transcripciones y traducciones se procesan en tiempo real y se muestran localmente en tu dispositivo. No conservamos el contenido transcrito ni traducido en nuestros servidores.</p>
+          <h3>1.4 Datos técnicos</h3>
+          <p>Podemos registrar logs de errores y datos técnicos anónimos (versión de la aplicación, código de error, sistema operativo) para mejorar la estabilidad de la aplicación.</p>
+        </section>
+
+        <section>
+          <h2>2. Cómo usamos tu información</h2>
+          <ul>
+            <li>Proveer, mantener y mejorar el servicio.</li>
+            <li>Gestionar tu cuenta, suscripción y cuota de uso.</li>
+            <li>Enviarte correos transaccionales relacionados con tu cuenta (recibos de pago, notificaciones de cuota).</li>
+            <li>Detectar y prevenir fraudes o abusos del servicio.</li>
+            <li>Cumplir obligaciones legales aplicables.</li>
+          </ul>
+          <p>No vendemos ni compartimos tu información personal con terceros con fines publicitarios.</p>
+        </section>
+
+        <section>
+          <h2>3. Base legal para el tratamiento (usuarios en la UE/EEE)</h2>
+          <p>Si te encuentras en la Unión Europea o el Espacio Económico Europeo, procesamos tus datos bajo las siguientes bases legales del RGPD:</p>
+          <ul>
+            <li><strong>Ejecución del contrato:</strong> para proveer el servicio que has contratado.</li>
+            <li><strong>Interés legítimo:</strong> para mejorar la seguridad y estabilidad del servicio.</li>
+            <li><strong>Obligación legal:</strong> cuando sea requerido por la normativa aplicable.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>4. Compartición de datos con terceros</h2>
+          <h3>4.1 Proveedor de transcripción de IA</h3>
+          <p>Los datos de audio se envían a nuestro proveedor de transcripción para su procesamiento en tiempo real. El proveedor no guarda grabaciones de audio más allá del tiempo necesario para generar la transcripción.</p>
+          <h3>4.2 Proveedor de traducción de IA</h3>
+          <p>Los textos transcritos se envían a nuestro proveedor de traducción. El proveedor procesa el texto bajo sus propios términos de privacidad y no lo utiliza para entrenar modelos sin consentimiento explícito.</p>
+          <h3>4.3 Supabase</h3>
+          <p>Supabase, Inc. provee nuestra infraestructura de base de datos y autenticación. Los datos de cuenta y uso se almacenan en servidores de Supabase en la región us-east-1 (AWS).</p>
+          <h3>4.4 Paddle</h3>
+          <p>Los pagos son procesados por Paddle.com Market Ltd., que actúa como Merchant of Record. Paddle recopila y procesa los datos de pago (nombre, dirección, información de tarjeta o método de pago). Consulta la <a href="https://www.paddle.com/legal/privacy" target="_blank" rel="noopener noreferrer">política de privacidad de Paddle</a> para más detalles.</p>
+          <h3>4.5 Google</h3>
+          <p>Utilizamos Google OAuth para la autenticación. Google puede procesar datos según sus propias políticas al realizar el inicio de sesión.</p>
+        </section>
+
+        <section>
+          <h2>5. Transferencias internacionales de datos</h2>
+          <p>Tus datos pueden ser procesados en servidores ubicados fuera de Chile, incluyendo Estados Unidos. En el caso de usuarios en la UE/EEE, estas transferencias se realizan bajo las salvaguardas adecuadas (Cláusulas Contractuales Estándar o certificaciones equivalentes).</p>
+        </section>
+
+        <section>
+          <h2>6. Retención de datos</h2>
+          <p>Conservamos los datos de tu cuenta mientras mantengas una cuenta activa. Los datos de uso se conservan por un máximo de 13 meses para fines de análisis y facturación. Puedes solicitar la eliminación de tu cuenta en cualquier momento escribiendo a <a href="mailto:hola@ecotranslate.app">hola@ecotranslate.app</a>.</p>
+        </section>
+
+        <section>
+          <h2>7. Tus derechos</h2>
+          <p>Dependiendo de tu ubicación, puedes tener los siguientes derechos:</p>
+          <ul>
+            <li>Acceder a la información personal que tenemos sobre ti.</li>
+            <li>Rectificar datos inexactos o incompletos.</li>
+            <li>Solicitar la eliminación de tus datos ("derecho al olvido").</li>
+            <li>Solicitar la portabilidad de tus datos.</li>
+            <li>Oponerte al tratamiento de tus datos.</li>
+            <li>Retirar el consentimiento en cualquier momento (sin afectar el tratamiento previo).</li>
+          </ul>
+          <p>Para ejercer cualquiera de estos derechos, escríbenos a <a href="mailto:hola@ecotranslate.app">hola@ecotranslate.app</a>. Responderemos en un plazo de 30 días.</p>
+        </section>
+
+        <section>
+          <h2>8. Seguridad</h2>
+          <p>Aplicamos medidas técnicas y organizativas razonables para proteger tus datos: cifrado en tránsito (TLS), autenticación mediante tokens de corta duración, y control de acceso basado en roles. Sin embargo, ningún sistema de seguridad es infalible.</p>
+        </section>
+
+        <section>
+          <h2>9. Menores de edad</h2>
+          <p>Eco no está dirigido a personas menores de 13 años. Si tienes conocimiento de que un menor nos ha proporcionado información personal, contáctanos para eliminarla.</p>
+        </section>
+
+        <section>
+          <h2>10. Cambios a esta política</h2>
+          <p>Podemos actualizar esta política periódicamente. Notificaremos cambios significativos por correo electrónico o mediante un aviso en la aplicación. El uso continuado del servicio tras la notificación implica la aceptación de los cambios.</p>
+        </section>
+
+        <section>
+          <h2>11. Contacto</h2>
+          <p>Para cualquier consulta relacionada con privacidad, escríbenos a:<br/>
+          <a href="mailto:hola@ecotranslate.app">hola@ecotranslate.app</a></p>
+        </section>
+
+      </div>
+    </div>
+  </main>
+  <Footer lang="es" />
+</Layout>
+
+<style>
+.legal-page {
+  padding-top: 120px;
+  padding-bottom: 80px;
+  min-height: 100svh;
+}
+
+.legal-header {
+  max-width: 720px;
+  margin-bottom: 56px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  transition: color 0.15s;
+}
+.back-link:hover { color: var(--cyan); }
+
+.legal-header h1 {
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.legal-meta {
+  font-size: 14px;
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+}
+
+.legal-body {
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.legal-body section h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: var(--text);
+}
+
+.legal-body section h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  margin-top: 20px;
+  color: var(--text-muted);
+}
+
+.legal-body p {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
+
+.legal-body ul {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.legal-body li {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.legal-body a {
+  color: var(--cyan);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.legal-body a:hover { opacity: 0.8; }
+
+.legal-body strong { color: var(--text); }
+</style>
