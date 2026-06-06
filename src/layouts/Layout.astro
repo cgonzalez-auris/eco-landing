@@ -1,5 +1,6 @@
 ---
 import type { Lang } from '../i18n/ui';
+import Analytics from '@vercel/analytics/astro';
 
 export interface Props {
   lang?: Lang;
@@ -101,6 +102,9 @@ const jsonLd = {
 
     <!-- JSON-LD -->
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+    <!-- Vercel Web Analytics -->
+    <Analytics />
   </head>
   <body>
     <slot />
