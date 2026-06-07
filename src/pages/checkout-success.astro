@@ -65,7 +65,8 @@ import '../styles/global.css';
           </div>
         </div>
 
-        <a href="/" class="btn-home">Volver al inicio</a>
+        <a href="eco://" class="btn-open-app">Abrir Eco</a>
+        <a href="/" class="link-home">Volver al inicio</a>
 
         <p class="help">
           ¿Problemas? Escríbenos a
@@ -259,7 +260,7 @@ h1 {
   margin-top: 1px;
 }
 
-.btn-home {
+.btn-open-app {
   display: inline-block;
   background: linear-gradient(135deg, var(--cyan), var(--indigo));
   color: #fff;
@@ -269,9 +270,19 @@ h1 {
   border-radius: var(--r-md);
   text-decoration: none;
   transition: opacity 0.15s;
+  margin-bottom: 14px;
+}
+.btn-open-app:hover { opacity: 0.88; }
+
+.link-home {
+  display: block;
+  font-size: 13px;
+  color: var(--text-faint);
+  text-decoration: underline;
+  text-underline-offset: 3px;
   margin-bottom: 28px;
 }
-.btn-home:hover { opacity: 0.88; }
+.link-home:hover { opacity: 0.8; }
 
 .help {
   font-size: 13px;
