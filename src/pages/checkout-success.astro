@@ -7,15 +7,37 @@ import '../styles/global.css';
 
 <Layout
   lang="es"
-  title="¡Pago exitoso! — Eco"
-  description="Tu suscripción a Eco ha sido activada."
+  title="Checkout — Eco"
+  description="Activa tu suscripción a Eco."
   canonical="https://ecotranslate.app/checkout-success"
 >
   <Nav lang="es" />
 
-  <main class="success-page">
+  <main class="checkout-page">
     <div class="container">
-      <div class="card">
+
+      <!-- Estado: cargando checkout -->
+      <div class="card" id="state-loading">
+        <div class="spinner" aria-hidden="true"></div>
+        <p class="loading-text">Cargando formulario de pago…</p>
+      </div>
+
+      <!-- Estado: cerrado sin pagar -->
+      <div class="card hidden" id="state-cancelled">
+        <div class="icon-wrap-muted" aria-hidden="true">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="15" y1="9" x2="9" y2="15"/>
+            <line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+        </div>
+        <h1>Pago cancelado</h1>
+        <p class="sub">No se realizó ningún cargo. Puedes volver e intentarlo cuando quieras.</p>
+        <a href="/" class="btn-home">Volver al inicio</a>
+      </div>
+
+      <!-- Estado: pago completado -->
+      <div class="card hidden" id="state-success">
         <div class="icon-wrap" aria-hidden="true">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10" />
@@ -50,14 +72,68 @@ import '../styles/global.css';
           <a href="mailto:hola@ecotranslate.app">hola@ecotranslate.app</a>
         </p>
       </div>
+
     </div>
   </main>
 
   <Footer lang="es" />
 </Layout>
 
+<!-- Paddle.js — se carga solo cuando hay _ptxn en la URL -->
+<script>
+  const params   = new URLSearchParams(window.location.search);
+  const ptxn     = params.get('_ptxn');
+  const stateLoading   = document.getElementById('state-loading')!;
+  const stateSuccess   = document.getElementById('state-success')!;
+  const stateCancelled = document.getElementById('state-cancelled')!;
+
+  function showSuccess() {
+    stateLoading.classList.add('hidden');
+    stateCancelled.classList.add('hidden');
+    stateSuccess.classList.remove('hidden');
+  }
+
+  function showCancelled() {
+    stateLoading.classList.add('hidden');
+    stateCancelled.classList.remove('hidden');
+  }
+
+  let completed = false;
+
+  if (!ptxn) {
+    // No hay transacción pendiente — llegó directo (ej. después del pago)
+    showSuccess();
+  } else {
+    // Cargar Paddle.js e iniciar el overlay de checkout
+    const script = document.createElement('script');
+    script.src = 'https://cdn.paddle.com/paddle/v2/paddle.js';
+    script.onload = () => {
+      const w = window as any;
+      // CLIENT_TOKEN se reemplaza por el token real más abajo
+      const token: string = 'test_3373b926370a7fa1b6e03ab3bc0';
+      const isSandbox = token.startsWith('test_');
+
+      if (isSandbox) w.Paddle.Environment.set('sandbox');
+
+      w.Paddle.Initialize({
+        token,
+        eventCallback(data: any) {
+          if (data.name === 'checkout.completed') { completed = true; showSuccess(); }
+          if (data.name === 'checkout.closed' && !completed) showCancelled();
+        },
+      });
+
+      // Hide our spinner once Paddle takes over
+      stateLoading.classList.add('hidden');
+
+      w.Paddle.Checkout.open({ transactionId: ptxn });
+    };
+    document.head.appendChild(script);
+  }
+</script>
+
 <style>
-.success-page {
+.checkout-page {
   min-height: 100svh;
   display: flex;
   align-items: center;
@@ -85,6 +161,38 @@ import '../styles/global.css';
     0 40px 100px rgba(0 0 0 / 0.6);
 }
 
+.hidden { display: none !important; }
+
+/* Loading spinner */
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid rgba(167 139 250 / 0.2);
+  border-top-color: var(--cyan);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 20px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text {
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+.icon-wrap-muted {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(255 255 255 / 0.04);
+  border: 1px solid rgba(255 255 255 / 0.1);
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+/* Success state */
 .icon-wrap {
   width: 80px;
   height: 80px;
