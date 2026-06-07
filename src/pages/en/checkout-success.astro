@@ -1,0 +1,178 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import '../../styles/global.css';
+---
+
+<Layout
+  lang="en"
+  title="Payment successful! — Eco"
+  description="Your Eco subscription has been activated."
+  canonical="https://ecotranslate.app/en/checkout-success"
+>
+  <Nav lang="en" />
+
+  <main class="success-page">
+    <div class="container">
+      <div class="card">
+        <div class="icon-wrap" aria-hidden="true">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="9 12 11 14 15 10" />
+          </svg>
+        </div>
+
+        <h1>Subscription activated!</h1>
+        <p class="sub">
+          Your plan is now active. Open the Eco app and your updated plan will appear automatically.
+        </p>
+
+        <div class="steps">
+          <div class="step">
+            <span class="step-num">1</span>
+            <span>Open <strong>Eco</strong> on your Mac</span>
+          </div>
+          <div class="step">
+            <span class="step-num">2</span>
+            <span>Your plan updates automatically — no extra steps needed</span>
+          </div>
+          <div class="step">
+            <span class="step-num">3</span>
+            <span>Start recording with your new minute allowance!</span>
+          </div>
+        </div>
+
+        <a href="/en/" class="btn-home">Back to home</a>
+
+        <p class="help">
+          Need help? Email us at
+          <a href="mailto:hola@ecotranslate.app">hola@ecotranslate.app</a>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <Footer lang="en" />
+</Layout>
+
+<style>
+.success-page {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  padding: 120px 24px 80px;
+}
+
+.container {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--r-lg);
+  padding: clamp(40px, 6vw, 64px) clamp(32px, 5vw, 56px);
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  box-shadow:
+    0 0 0 1px rgba(167 139 250 / 0.06),
+    0 40px 100px rgba(0 0 0 / 0.6);
+}
+
+.icon-wrap {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--emerald-dim);
+  border: 1px solid rgba(52 211 153 / 0.25);
+  color: var(--emerald);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 28px;
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 4vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 14px;
+  line-height: 1.2;
+}
+
+.sub {
+  font-size: 16px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 36px;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+  margin-bottom: 36px;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.step strong { color: var(--text); }
+
+.step-num {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--cyan-dim);
+  border: 1px solid rgba(167 139 250 / 0.3);
+  color: var(--cyan);
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+.btn-home {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--cyan), var(--indigo));
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 13px 32px;
+  border-radius: var(--r-md);
+  text-decoration: none;
+  transition: opacity 0.15s;
+  margin-bottom: 28px;
+}
+.btn-home:hover { opacity: 0.88; }
+
+.help {
+  font-size: 13px;
+  color: var(--text-faint);
+}
+.help a {
+  color: var(--cyan);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.help a:hover { opacity: 0.8; }
+</style>
