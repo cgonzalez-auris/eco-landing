@@ -110,8 +110,15 @@ import '../styles/global.css';
     script.src = 'https://cdn.paddle.com/paddle/v2/paddle.js';
     script.onload = () => {
       const w = window as any;
-      // CLIENT_TOKEN se reemplaza por el token real más abajo
-      const token: string = 'test_3373b926370a7fa1b6e03ab3bc0';
+      // Production domains use the live Paddle token; any other host
+      // (staging.ecotranslate.app, localhost, *.vercel.app previews) falls
+      // back to sandbox so a misconfigured domain can never charge real money.
+      const LIVE_TOKEN = 'live_6d9eaced5cf32bb1a1f57e1fc5f';
+      const SANDBOX_TOKEN = 'test_3373b926370a7fa1b6e03ab3bc0';
+      const isProduction =
+        location.hostname === 'ecotranslate.app' ||
+        location.hostname === 'www.ecotranslate.app';
+      const token: string = isProduction ? LIVE_TOKEN : SANDBOX_TOKEN;
       const isSandbox = token.startsWith('test_');
 
       if (isSandbox) w.Paddle.Environment.set('sandbox');
