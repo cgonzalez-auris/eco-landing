@@ -9,7 +9,7 @@ import '../../styles/global.css';
   lang="en"
   title="Checkout — Eco"
   description="Activate your Eco subscription."
-  canonical="https://ecotranslate.app/en/checkout-success"
+  canonical="https://ecotranslate.app/en/checkout"
 >
   <Nav lang="en" />
 
@@ -34,6 +34,24 @@ import '../../styles/global.css';
         <h1>Payment cancelled</h1>
         <p class="sub">No charge was made. You can come back and try again anytime.</p>
         <a href="/en/" class="btn-home">Back to home</a>
+      </div>
+
+      <!-- Direct arrival without a transaction — don't claim success or failure -->
+      <div class="card hidden" id="state-neutral">
+        <div class="icon-wrap-muted" aria-hidden="true">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+        </div>
+        <h1>Did you complete your payment?</h1>
+        <p class="sub">
+          If you already paid, your plan activates automatically.
+          Open Eco on your Mac to see it reflected.
+        </p>
+        <a href="eco://upgrade-complete" class="btn-open-app">Open Eco</a>
+        <a href="/en/" class="link-home">Back to home</a>
       </div>
 
       <!-- Success state -->
@@ -86,6 +104,7 @@ import '../../styles/global.css';
   const stateLoading   = document.getElementById('state-loading')!;
   const stateSuccess   = document.getElementById('state-success')!;
   const stateCancelled = document.getElementById('state-cancelled')!;
+  const stateNeutral   = document.getElementById('state-neutral')!;
 
   function showSuccess() {
     stateLoading.classList.add('hidden');
@@ -98,10 +117,16 @@ import '../../styles/global.css';
     stateCancelled.classList.remove('hidden');
   }
 
+  function showNeutral() {
+    stateLoading.classList.add('hidden');
+    stateNeutral.classList.remove('hidden');
+  }
+
   let completed = false;
 
   if (!ptxn) {
-    showSuccess();
+    // Direct arrival with no pending transaction — we can't know if they paid.
+    showNeutral();
   } else {
     const script = document.createElement('script');
     script.src = 'https://cdn.paddle.com/paddle/v2/paddle.js';
