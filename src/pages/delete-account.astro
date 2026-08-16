@@ -1,0 +1,167 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+const lastUpdated = '16 de agosto de 2026';
+---
+
+<Layout lang="es" title="Eliminar tu cuenta — Eco" description="Cómo solicitar la eliminación de tu cuenta de Eco y qué datos se borran." canonical="https://ecotranslate.app/delete-account">
+  <Nav lang="es" />
+  <main class="legal-page">
+    <div class="container">
+      <div class="legal-header">
+        <a href="/" class="back-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+          Volver al inicio
+        </a>
+        <h1>Eliminar tu cuenta</h1>
+        <p class="legal-meta">Última actualización: {lastUpdated}</p>
+      </div>
+
+      <div class="legal-body">
+
+        <section>
+          <p>Esta página explica cómo eliminar tu cuenta de <strong>Eco</strong> —la aplicación de subtítulos y traducción en vivo de Ingeniería Informática Auris SpA, disponible como <em>Eco: Traductor y Subtítulos</em> en Google Play, y para iPhone y Mac— y qué ocurre con tus datos cuando lo haces.</p>
+        </section>
+
+        <section>
+          <h2>1. Cómo eliminar tu cuenta desde la app</h2>
+          <p>La forma más rápida es hacerlo desde la propia aplicación, en cualquiera de las tres plataformas:</p>
+          <ul>
+            <li>Abre Eco e inicia sesión con la cuenta que quieres eliminar.</li>
+            <li>Entra en <strong>Ajustes</strong>.</li>
+            <li>En la sección <strong>Cuenta</strong>, pulsa <strong>Eliminar cuenta</strong>.</li>
+            <li>Confirma la operación. La eliminación es inmediata y no se puede deshacer.</li>
+          </ul>
+          <p>Al confirmar, la sesión se cierra y la cuenta deja de existir.</p>
+        </section>
+
+        <section>
+          <h2>2. Cómo solicitarlo por correo</h2>
+          <p>Si ya no tienes acceso a la aplicación o prefieres que lo hagamos nosotros, escríbenos a <a href="mailto:cgonzalez@auris.cl">cgonzalez@auris.cl</a> desde la dirección de correo asociada a tu cuenta, indicando que deseas eliminarla. Responderemos y completaremos la eliminación en un plazo máximo de 30 días.</p>
+        </section>
+
+        <section>
+          <h2>3. Qué datos se eliminan</h2>
+          <p>Al eliminar la cuenta se borran de forma permanente:</p>
+          <ul>
+            <li>Tu perfil: nombre, dirección de correo electrónico y foto asociados a tu inicio de sesión con Google.</li>
+            <li>Tu registro de uso mensual: los minutos de grabación consumidos y los tokens de traducción.</li>
+            <li>El estado de tu suscripción y los identificadores de compra asociados a tu cuenta.</li>
+            <li>Tu identidad de acceso, de modo que ese inicio de sesión deja de existir en nuestros sistemas.</li>
+          </ul>
+          <p>Las transcripciones y grabaciones se guardan <strong>únicamente en tu dispositivo</strong>, nunca en nuestros servidores. Al desinstalar la aplicación desaparecen contigo; también puedes borrarlas una a una desde el historial en cualquier momento.</p>
+        </section>
+
+        <section>
+          <h2>4. Qué se conserva, y por qué</h2>
+          <p>Conservamos un único dato, y creemos que es justo explicarlo con claridad: un <strong>código irreversible derivado de tu identificador de acceso</strong>, junto con los minutos que habías consumido en el mes en curso.</p>
+          <p>No permite identificarte ni reconstruir tu correo: es el resultado de una función hash con sal, imposible de revertir. Su único propósito es impedir que la cuota gratuita mensual se reinicie eliminando la cuenta y creándola de nuevo. Ese registro se descarta al terminar el mes.</p>
+          <p>Además, las facturas y los registros de pago pueden conservarse durante el plazo que exige la normativa tributaria y contable aplicable, tal y como se detalla en nuestra <a href="/privacy">Política de Privacidad</a>.</p>
+        </section>
+
+        <section>
+          <h2>5. Tu suscripción</h2>
+          <p>Eliminar la cuenta <strong>no cancela</strong> una suscripción activa. Las suscripciones se gestionan en la tienda donde las contrataste, y debes cancelarlas allí:</p>
+          <ul>
+            <li><strong>Google Play:</strong> Play Store → tu foto → Pagos y suscripciones → Suscripciones.</li>
+            <li><strong>App Store:</strong> Ajustes → tu nombre → Suscripciones.</li>
+            <li><strong>Web:</strong> desde el enlace de gestión incluido en el correo de tu compra.</li>
+          </ul>
+        </section>
+
+      </div>
+    </div>
+  </main>
+  <Footer lang="es" />
+</Layout>
+
+<style>
+.legal-page {
+  padding-top: 120px;
+  padding-bottom: 80px;
+  min-height: 100svh;
+}
+
+.legal-header {
+  max-width: 720px;
+  margin-bottom: 56px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  transition: color 0.15s;
+}
+.back-link:hover { color: var(--cyan); }
+
+.legal-header h1 {
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.legal-meta {
+  font-size: 14px;
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+}
+
+.legal-body {
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.legal-body section h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: var(--text);
+}
+
+.legal-body section h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  margin-top: 20px;
+  color: var(--text-muted);
+}
+
+.legal-body p {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
+
+.legal-body ul {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.legal-body li {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.legal-body a {
+  color: var(--cyan);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.legal-body a:hover { opacity: 0.8; }
+
+.legal-body strong { color: var(--text); }
+</style>

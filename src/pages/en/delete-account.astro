@@ -1,0 +1,167 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import '../../styles/global.css';
+
+const lastUpdated = 'August 16, 2026';
+---
+
+<Layout lang="en" title="Delete your account — Eco" description="How to request deletion of your Eco account and what data is removed." canonical="https://ecotranslate.app/en/delete-account">
+  <Nav lang="en" />
+  <main class="legal-page">
+    <div class="container">
+      <div class="legal-header">
+        <a href="/en" class="back-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+          Back to home
+        </a>
+        <h1>Delete your account</h1>
+        <p class="legal-meta">Last updated: {lastUpdated}</p>
+      </div>
+
+      <div class="legal-body">
+
+        <section>
+          <p>This page explains how to delete your <strong>Eco</strong> account — the live captions and translation app by Ingeniería Informática Auris SpA, listed as <em>Eco: Traductor y Subtítulos</em> on Google Play and also available for iPhone and Mac — and what happens to your data when you do.</p>
+        </section>
+
+        <section>
+          <h2>1. Deleting your account from the app</h2>
+          <p>The quickest way is from inside the app, on any of the three platforms:</p>
+          <ul>
+            <li>Open Eco and sign in with the account you want to delete.</li>
+            <li>Go to <strong>Settings</strong>.</li>
+            <li>Under <strong>Account</strong>, tap <strong>Delete account</strong>.</li>
+            <li>Confirm. Deletion is immediate and cannot be undone.</li>
+          </ul>
+          <p>Once confirmed, you are signed out and the account no longer exists.</p>
+        </section>
+
+        <section>
+          <h2>2. Requesting it by email</h2>
+          <p>If you no longer have access to the app, or would rather we did it for you, email <a href="mailto:cgonzalez@auris.cl">cgonzalez@auris.cl</a> from the address associated with your account and tell us you want it deleted. We will reply and complete the deletion within 30 days at the latest.</p>
+        </section>
+
+        <section>
+          <h2>3. What gets deleted</h2>
+          <p>Deleting your account permanently removes:</p>
+          <ul>
+            <li>Your profile: the name, email address and picture that came from your Google sign-in.</li>
+            <li>Your monthly usage record: recording minutes consumed and translation tokens.</li>
+            <li>Your subscription state and the purchase identifiers tied to your account.</li>
+            <li>Your sign-in identity, so that login no longer exists in our systems.</li>
+          </ul>
+          <p>Transcripts and recordings live <strong>only on your device</strong>, never on our servers. They go away when you uninstall the app, and you can delete them individually from the history at any time.</p>
+        </section>
+
+        <section>
+          <h2>4. What is kept, and why</h2>
+          <p>We keep exactly one thing, and it seems only fair to be plain about it: an <strong>irreversible code derived from your sign-in identifier</strong>, together with the minutes you had already used in the current month.</p>
+          <p>It cannot identify you or be turned back into your email — it is the output of a salted hash function, which cannot be reversed. Its only purpose is to stop the free monthly quota from being reset by deleting an account and creating it again. That record is discarded when the month ends.</p>
+          <p>Invoices and payment records may also be retained for as long as tax and accounting law requires, as described in our <a href="/en/privacy">Privacy Policy</a>.</p>
+        </section>
+
+        <section>
+          <h2>5. Your subscription</h2>
+          <p>Deleting your account <strong>does not cancel</strong> an active subscription. Subscriptions are managed by the store you bought them from, and must be cancelled there:</p>
+          <ul>
+            <li><strong>Google Play:</strong> Play Store → your picture → Payments and subscriptions → Subscriptions.</li>
+            <li><strong>App Store:</strong> Settings → your name → Subscriptions.</li>
+            <li><strong>Web:</strong> through the management link in your purchase email.</li>
+          </ul>
+        </section>
+
+      </div>
+    </div>
+  </main>
+  <Footer lang="en" />
+</Layout>
+
+<style>
+.legal-page {
+  padding-top: 120px;
+  padding-bottom: 80px;
+  min-height: 100svh;
+}
+
+.legal-header {
+  max-width: 720px;
+  margin-bottom: 56px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  transition: color 0.15s;
+}
+.back-link:hover { color: var(--cyan); }
+
+.legal-header h1 {
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.legal-meta {
+  font-size: 14px;
+  color: var(--text-faint);
+  font-family: var(--font-mono);
+}
+
+.legal-body {
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.legal-body section h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: var(--text);
+}
+
+.legal-body section h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  margin-top: 20px;
+  color: var(--text-muted);
+}
+
+.legal-body p {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
+
+.legal-body ul {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.legal-body li {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.legal-body a {
+  color: var(--cyan);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.legal-body a:hover { opacity: 0.8; }
+
+.legal-body strong { color: var(--text); }
+</style>
