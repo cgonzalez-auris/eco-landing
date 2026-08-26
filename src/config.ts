@@ -55,8 +55,6 @@ export const DOWNLOAD = {
     path: '/download/mac',
     version: '0.2.5',
     minOS: 'macOS 14.4+',
-    /** shasum -a 256 del .dmg publicado, para quien quiera verificarlo a mano. */
-    sha256: 'e87d67e929aaa1b367cea3772f4afa88d2452852675ba0fcde1ffa04742e8671',
   },
   appStore: 'https://apps.apple.com/app/id6791297799',
   playStore: 'https://play.google.com/store/apps/details?id=com.eco.mobile',

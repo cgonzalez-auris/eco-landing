@@ -37,7 +37,7 @@ const t = useTranslations(lang).download;
         data-track-tienda="app_store"
         data-track-ubicacion="seccion_descarga"
       >
-        <svg class="dl-card__logo" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M8.5 16.5 12 9l3.5 7.5"/><path d="M10 14h4"/></svg>
+        <svg class="dl-card__logo dl-card__logo--appstore" width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11.5" fill="#0D96F6"/><g stroke="#fff" stroke-width="1.7" stroke-linecap="round"><path d="M8.1 17.4 14.1 7"/><path d="M9.9 7l6 10.4"/><path d="M6.3 14.1h11.4"/><path d="M6.9 17.4h1.2"/></g></svg>
         <span class="dl-card__title">{t.appStore}</span>
         <span class="dl-card__meta">{t.appStoreMeta}</span>
       </a>
@@ -58,13 +58,6 @@ const t = useTranslations(lang).download;
       </a>
     </div>
 
-    {DOWNLOAD.mac.sha256 && (
-      <details class="download__checksum">
-        <summary>{t.macChecksum}</summary>
-        <p class="checksum__help">{t.macChecksumHelp}</p>
-        <code class="checksum__value">{DOWNLOAD.mac.sha256}</code>
-      </details>
-    )}
   </div>
 </section>
 
@@ -131,6 +124,11 @@ const t = useTranslations(lang).download;
   margin-bottom: 6px;
 }
 
+/* Trae su propio fondo de marca, así que no hereda currentColor. */
+.dl-card__logo--appstore {
+  border-radius: 50%;
+}
+
 .dl-card__title {
   font-weight: 700;
   font-size: 15px;
@@ -145,33 +143,6 @@ const t = useTranslations(lang).download;
 
 .dl-card__version {
   font-family: var(--font-mono);
-}
-
-.download__checksum {
-  margin-top: 32px;
-  font-size: 13px;
-  color: var(--text-faint);
-}
-
-.download__checksum summary {
-  cursor: pointer;
-  display: inline-block;
-}
-
-.checksum__help {
-  margin-top: 10px;
-  color: var(--text-muted);
-}
-
-.checksum__value {
-  display: inline-block;
-  margin-top: 8px;
-  padding: 6px 10px;
-  border-radius: 6px;
-  background: rgba(255 255 255 / 0.05);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  word-break: break-all;
 }
 
 @media (max-width: 760px) {
