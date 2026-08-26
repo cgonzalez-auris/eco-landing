@@ -1,4 +1,11 @@
 {
+  "redirects": [
+    {
+      "source": "/download/mac",
+      "destination": "https://ngaxkwynbtmxdhfuwrub.supabase.co/storage/v1/object/public/downloads/eco/Eco-0.2.3.dmg?download=Eco-0.2.3.dmg",
+      "permanent": false
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

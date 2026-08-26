@@ -1,0 +1,180 @@
+---
+import type { Lang } from '../i18n/ui';
+import { useTranslations } from '../i18n/ui';
+import { DOWNLOAD } from '../config';
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const t = useTranslations(lang).download;
+---
+<section class="download" id="download">
+  <div class="container">
+    <div class="section-label">{t.label}</div>
+    <h2 class="download__title">{t.title}</h2>
+    <p class="download__sub">{t.subtitle}</p>
+
+    <div class="download__grid">
+      <!-- macOS: descarga directa del .dmg firmado y notarizado -->
+      <a
+        class="dl-card dl-card--mac"
+        href={DOWNLOAD.mac.path}
+        data-track="download_click"
+        data-track-plataforma="mac"
+        data-track-ubicacion="seccion_descarga"
+      >
+        <svg class="dl-card__logo" width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.42 2.2-1.12 3.01-.85.98-2.24 1.74-3.4 1.65-.14-1.1.42-2.27 1.09-3.02.76-.86 2.15-1.55 3.43-1.64zM20.9 17.14c-.55 1.28-.82 1.85-1.53 2.98-.99 1.58-2.38 3.54-4.1 3.55-1.53.01-1.93-1-4.01-.99-2.08.01-2.51 1.01-4.05.99-1.72-.02-3.04-1.79-4.03-3.36C.4 15.9-.1 11.02 1.6 8.42c1.21-1.84 3.12-2.92 4.92-2.92 1.83 0 2.98 1 4.5 1 1.47 0 2.36-1 4.48-1 1.6 0 3.3.87 4.51 2.38-3.96 2.17-3.32 7.83 1.02 9.26z"/></svg>
+        <span class="dl-card__title">{t.macTitle}</span>
+        <span class="dl-card__meta">{t.macMeta}</span>
+        <span class="dl-card__version">{t.macVersion} {DOWNLOAD.mac.version}</span>
+      </a>
+
+      <!-- App Store -->
+      <a
+        class="dl-card"
+        href={DOWNLOAD.appStore}
+        target="_blank"
+        rel="noopener"
+        data-track="store_click"
+        data-track-tienda="app_store"
+        data-track-ubicacion="seccion_descarga"
+      >
+        <svg class="dl-card__logo" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M8.5 16.5 12 9l3.5 7.5"/><path d="M10 14h4"/></svg>
+        <span class="dl-card__title">{t.appStore}</span>
+        <span class="dl-card__meta">{t.appStoreMeta}</span>
+      </a>
+
+      <!-- Google Play -->
+      <a
+        class="dl-card"
+        href={DOWNLOAD.playStore}
+        target="_blank"
+        rel="noopener"
+        data-track="store_click"
+        data-track-tienda="play_store"
+        data-track-ubicacion="seccion_descarga"
+      >
+        <svg class="dl-card__logo" width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path fill="#34A853" d="M3.6 21.4 14 13.3l2.7 2.7-11 6.3c-.8.5-1.7.2-2.1-.9z"/><path fill="#EA4335" d="M3.6 2.6 14 10.7 16.7 8l-11-6.3c-.8-.5-1.7-.2-2.1.9z"/><path fill="#FBBC04" d="m16.7 8 4 2.3c1 .6 1 2.2 0 2.8l-4 2.2-3.1-2.9L16.7 8z"/><path fill="#4285F4" d="M3.6 2.6c-.1.2-.1.4-.1.7v17.4c0 .3 0 .5.1.7L13.6 12 3.6 2.6z"/></svg>
+        <span class="dl-card__title">{t.playStore}</span>
+        <span class="dl-card__meta">{t.playStoreMeta}</span>
+      </a>
+    </div>
+
+    {DOWNLOAD.mac.sha256 && (
+      <details class="download__checksum">
+        <summary>{t.macChecksum}</summary>
+        <p class="checksum__help">{t.macChecksumHelp}</p>
+        <code class="checksum__value">{DOWNLOAD.mac.sha256}</code>
+      </details>
+    )}
+  </div>
+</section>
+
+<style>
+.download {
+  padding-block: clamp(70px, 9vw, 110px);
+  text-align: center;
+}
+
+.download__title {
+  font-size: clamp(30px, 4vw, 44px);
+  font-weight: 900;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+  margin-bottom: 16px;
+  white-space: pre-line;
+}
+
+.download__sub {
+  font-size: clamp(15px, 1.6vw, 17px);
+  color: var(--text-muted);
+  line-height: 1.65;
+  max-width: 540px;
+  margin: 0 auto 44px;
+}
+
+.download__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  max-width: 840px;
+  margin-inline: auto;
+}
+
+.dl-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 28px 20px;
+  border-radius: var(--r-lg, 16px);
+  background: rgba(255 255 255 / 0.04);
+  border: 1px solid var(--border, rgba(255 255 255 / 0.1));
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.dl-card:hover {
+  transform: translateY(-3px);
+  background: rgba(255 255 255 / 0.07);
+  border-color: rgba(167 139 250 / 0.4);
+}
+
+/* La descarga de Mac es la acción principal de esta página: se distingue del
+   resto sin necesidad de un tamaño distinto que rompa la rejilla. */
+.dl-card--mac {
+  background: linear-gradient(180deg, rgba(124 58 237 / 0.22), rgba(124 58 237 / 0.08));
+  border-color: rgba(167 139 250 / 0.45);
+}
+
+.dl-card__logo {
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.dl-card__title {
+  font-weight: 700;
+  font-size: 15px;
+  color: #fff;
+}
+
+.dl-card__meta,
+.dl-card__version {
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.dl-card__version {
+  font-family: var(--font-mono);
+}
+
+.download__checksum {
+  margin-top: 32px;
+  font-size: 13px;
+  color: var(--text-faint);
+}
+
+.download__checksum summary {
+  cursor: pointer;
+  display: inline-block;
+}
+
+.checksum__help {
+  margin-top: 10px;
+  color: var(--text-muted);
+}
+
+.checksum__value {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(255 255 255 / 0.05);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  word-break: break-all;
+}
+
+@media (max-width: 760px) {
+  .download__grid { grid-template-columns: 1fr; }
+}
+</style>
