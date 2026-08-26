@@ -4,16 +4,16 @@ export const ui = {
   es: {
     seo: {
       home: {
-        title: 'Eco — Transcripción y Traducción en Tiempo Real para macOS',
-        description: 'Eco captura el audio de tu micrófono y del sistema y genera subtítulos automáticos en tiempo real. Transcripción y traducción simultánea para reuniones, clases y videos en otro idioma. macOS 14.4+',
+        title: 'Eco — Transcripción y Traducción en Tiempo Real para Mac, iPhone y Android',
+        description: 'Eco captura el audio de tu micrófono y del sistema y genera subtítulos automáticos en tiempo real. Transcripción y traducción simultánea para reuniones, clases y videos en otro idioma. Mac, iPhone y Android.',
       },
       privacy: {
         title: 'Política de Privacidad — Eco',
-        description: 'Política de privacidad de Eco, aplicación de transcripción y traducción en tiempo real para macOS.',
+        description: 'Política de privacidad de Eco, aplicación de transcripción y traducción en tiempo real para Mac, iPhone y Android.',
       },
       terms: {
         title: 'Términos de Servicio — Eco',
-        description: 'Términos y condiciones de uso de Eco, aplicación de transcripción y traducción en tiempo real para macOS.',
+        description: 'Términos y condiciones de uso de Eco, aplicación de transcripción y traducción en tiempo real para Mac, iPhone y Android.',
       },
     },
     nav: {
@@ -23,7 +23,7 @@ export const ui = {
       download: 'Descargar',
     },
     hero: {
-      pill: 'Disponible para macOS 14.4+',
+      pill: 'Disponible para Mac, iPhone y Android',
       title1: 'Ellos hablan',
       title2: 'otro idioma.',
       titleAccent: 'Tú lo entiendes igual.',
@@ -77,20 +77,30 @@ export const ui = {
         },
       ],
     },
+    download: {
+      label: 'Descargar',
+      title: 'Empieza en tu Mac,\nsigue en tu bolsillo.',
+      subtitle: 'Una cuenta y una suscripción para las tres. La compras donde quieras y funciona en todas.',
+      macTitle: 'Descargar para Mac',
+      macMeta: 'macOS 14.4+ · Apple Silicon e Intel',
+      macVersion: 'Versión',
+      macChecksum: 'Verificar la descarga (SHA-256)',
+      macChecksumHelp: 'Compara este valor con el que devuelve shasum -a 256 sobre el archivo descargado.',
+      appStore: 'Descargar en el App Store',
+      appStoreMeta: 'iPhone y iPad · iOS 17+',
+      playStore: 'Disponible en Google Play',
+      playStoreMeta: 'Android 8+',
+    },
     pricing: {
       label: 'Precios',
       title: 'Transparente. Sin sorpresas.',
       subtitle: 'Cancela cuando quieras. Pagos procesados de forma segura por Paddle.',
-      billingMonthly: 'Mensual',
-      billingAnnual: 'Anual',
-      saveBadge: 'Ahorra 17%',
       footerNote: 'Pagos procesados por Paddle · Cancela en cualquier momento',
       plans: [
         {
           id: 'free',
           name: 'Gratuito',
           priceMonthly: 0,
-          priceAnnual: 0,
           minutes: '10 min / mes',
           desc: 'Para conocer Eco antes de comprometerte.',
           cta: 'Comenzar gratis',
@@ -107,8 +117,6 @@ export const ui = {
           id: 'lite',
           name: 'Lite',
           priceMonthly: 8.99,
-          priceAnnual: 6.58,
-          annualTotal: 79,
           minutes: '300 min / mes',
           desc: 'Para uso regular: reuniones, clases y contenido.',
           cta: 'Comenzar con Lite',
@@ -126,8 +134,6 @@ export const ui = {
           id: 'pro',
           name: 'Pro',
           priceMonthly: 19.99,
-          priceAnnual: 14.58,
-          annualTotal: 175,
           minutes: '1,000 min / mes',
           desc: 'Para uso intensivo y profesionales del idioma.',
           cta: 'Comenzar con Pro',
@@ -151,7 +157,7 @@ export const ui = {
       items: [
         {
           q: '¿Qué es Eco?',
-          a: 'Eco es una aplicación para la barra de menú de macOS que captura el audio de tu micrófono y del sistema al mismo tiempo, lo transcribe y traduce en tiempo real con IA. Está pensada para personas que necesitan entender audio en otro idioma sin interrumpir su flujo de trabajo.',
+          a: 'Eco captura el audio de tu micrófono y del sistema al mismo tiempo, lo transcribe y traduce en tiempo real con IA. En Mac vive en la barra de menú, y también está en iPhone y Android. Está pensada para personas que necesitan entender audio en otro idioma sin interrumpir su flujo de trabajo.',
         },
         {
           q: '¿Qué idiomas soporta?',
@@ -166,13 +172,13 @@ export const ui = {
           a: 'Sí, sin permanencia ni penalizaciones. Puedes cancelar desde el portal de Paddle (que te llega por email al comprar) o desde la configuración de Eco. Al cancelar, tu plan sigue activo hasta el final del período que ya pagaste.',
         },
         {
-          q: '¿En qué versiones de macOS funciona?',
-          a: 'Eco requiere macOS 14.4 (Sonoma) o superior. No hay versión para iOS, Windows ni Linux.',
+          q: '¿En qué dispositivos funciona?',
+          a: 'En Mac necesitas macOS 14.4 (Sonoma) o superior; en iPhone y iPad, iOS 17 o superior; en Android, la versión 8 o superior. Tu suscripción vale en las tres: la compras una vez y la usas en todas. No hay versión para Windows ni Linux.',
         },
       ],
     },
     footer: {
-      tagline: 'Transcripción y traducción\nen tiempo real para macOS.',
+      tagline: 'Transcripción y traducción\nen tiempo real para Mac,\niPhone y Android.',
       paddleNote: 'Pagos procesados por Paddle',
       product: 'Producto',
       legal: 'Legal',
@@ -184,7 +190,7 @@ export const ui = {
       privacy: 'Política de privacidad',
       terms: 'Términos de servicio',
       copyright: 'Eco.',
-      macos: 'macOS 14.4+',
+      macos: 'Mac · iPhone · Android',
       email: 'hola@ecotranslate.app',
     },
   },
@@ -192,16 +198,16 @@ export const ui = {
   en: {
     seo: {
       home: {
-        title: 'Eco — Real-Time Transcription & Translation for macOS',
-        description: 'Eco captures your microphone and system audio and generates live captions with real-time translation. Auto subtitles for meetings, classes, and videos in another language. macOS 14.4+',
+        title: 'Eco — Real-Time Transcription & Translation for Mac, iPhone and Android',
+        description: 'Eco captures your microphone and system audio and generates live captions with real-time translation. Auto subtitles for meetings, classes, and videos in another language. Mac, iPhone and Android.',
       },
       privacy: {
         title: 'Privacy Policy — Eco',
-        description: 'Privacy policy for Eco, the real-time transcription and translation app for macOS.',
+        description: 'Privacy policy for Eco, the real-time transcription and translation app for Mac, iPhone and Android.',
       },
       terms: {
         title: 'Terms of Service — Eco',
-        description: 'Terms and conditions of use for Eco, the real-time transcription and translation app for macOS.',
+        description: 'Terms and conditions of use for Eco, the real-time transcription and translation app for Mac, iPhone and Android.',
       },
     },
     nav: {
@@ -211,7 +217,7 @@ export const ui = {
       download: 'Download',
     },
     hero: {
-      pill: 'Available for macOS 14.4+',
+      pill: 'Available for Mac, iPhone and Android',
       title1: 'They speak',
       title2: 'another language.',
       titleAccent: 'You understand them anyway.',
@@ -265,20 +271,30 @@ export const ui = {
         },
       ],
     },
+    download: {
+      label: 'Download',
+      title: 'Start on your Mac,\ncarry on in your pocket.',
+      subtitle: 'One account and one subscription for all three. Buy it wherever you like and it works everywhere.',
+      macTitle: 'Download for Mac',
+      macMeta: 'macOS 14.4+ · Apple Silicon and Intel',
+      macVersion: 'Version',
+      macChecksum: 'Verify the download (SHA-256)',
+      macChecksumHelp: 'Compare this value with what shasum -a 256 returns for the downloaded file.',
+      appStore: 'Download on the App Store',
+      appStoreMeta: 'iPhone and iPad · iOS 17+',
+      playStore: 'Get it on Google Play',
+      playStoreMeta: 'Android 8+',
+    },
     pricing: {
       label: 'Pricing',
       title: 'Transparent. No surprises.',
       subtitle: 'Cancel anytime. Payments securely processed by Paddle.',
-      billingMonthly: 'Monthly',
-      billingAnnual: 'Annual',
-      saveBadge: 'Save 17%',
       footerNote: 'Payments processed by Paddle · Cancel anytime',
       plans: [
         {
           id: 'free',
           name: 'Free',
           priceMonthly: 0,
-          priceAnnual: 0,
           minutes: '10 min / mo',
           desc: 'Try Eco before committing.',
           cta: 'Get started free',
@@ -295,8 +311,6 @@ export const ui = {
           id: 'lite',
           name: 'Lite',
           priceMonthly: 8.99,
-          priceAnnual: 6.58,
-          annualTotal: 79,
           minutes: '300 min / mo',
           desc: 'For regular use: meetings, classes, and content.',
           cta: 'Get Lite',
@@ -314,8 +328,6 @@ export const ui = {
           id: 'pro',
           name: 'Pro',
           priceMonthly: 19.99,
-          priceAnnual: 14.58,
-          annualTotal: 175,
           minutes: '1,000 min / mo',
           desc: 'For heavy use and language professionals.',
           cta: 'Get Pro',
@@ -339,7 +351,7 @@ export const ui = {
       items: [
         {
           q: 'What is Eco?',
-          a: 'Eco is a macOS menu bar app that captures your microphone and system audio simultaneously, transcribes and translates in real time with AI. Built for people who need to understand audio in another language without disrupting their workflow.',
+          a: 'Eco captures your microphone and system audio simultaneously, transcribes and translates in real time with AI. On Mac it lives in the menu bar, and it is also on iPhone and Android. Built for people who need to understand audio in another language without disrupting their workflow.',
         },
         {
           q: 'What languages does it support?',
@@ -354,13 +366,13 @@ export const ui = {
           a: 'Yes, with no lock-in or penalties. You can cancel from the Paddle portal (link sent in your purchase confirmation email) or from within Eco settings. After canceling, your plan stays active until the end of the period you already paid for.',
         },
         {
-          q: 'Which macOS versions are supported?',
-          a: 'Eco requires macOS 14.4 (Sonoma) or later. There is no iOS, Windows, or Linux version.',
+          q: 'Which devices are supported?',
+          a: 'On Mac you need macOS 14.4 (Sonoma) or later; on iPhone and iPad, iOS 17 or later; on Android, version 8 or later. One subscription covers all three: buy it once and use it everywhere. There is no Windows or Linux version.',
         },
       ],
     },
     footer: {
-      tagline: 'Real-time transcription and\ntranslation for macOS.',
+      tagline: 'Real-time transcription and\ntranslation for Mac,\niPhone and Android.',
       paddleNote: 'Payments processed by Paddle',
       product: 'Product',
       legal: 'Legal',
@@ -372,7 +384,7 @@ export const ui = {
       privacy: 'Privacy Policy',
       terms: 'Terms of Service',
       copyright: 'Eco.',
-      macos: 'macOS 14.4+',
+      macos: 'Mac · iPhone · Android',
       email: 'hello@ecotranslate.app',
     },
   },

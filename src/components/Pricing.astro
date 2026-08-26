@@ -4,6 +4,7 @@ import { useTranslations } from '../i18n/ui';
 interface Props { lang: Lang; }
 const { lang } = Astro.props;
 const t = useTranslations(lang).pricing;
+const base = lang === 'en' ? '/en' : '';
 ---
 
 <section class="section pricing" id="pricing">
@@ -11,14 +12,6 @@ const t = useTranslations(lang).pricing;
     <div class="section-label">{t.label}</div>
     <h2 class="pricing__title reveal">{t.title}</h2>
     <p class="pricing__sub reveal">{t.subtitle}</p>
-
-    <div class="billing-toggle reveal" role="group">
-      <button class="billing-btn billing-btn--active" data-billing="monthly">{t.billingMonthly}</button>
-      <button class="billing-btn" data-billing="annual">
-        {t.billingAnnual}
-        <span class="save-badge">{t.saveBadge}</span>
-      </button>
-    </div>
 
     <div class="pricing__grid">
       {t.plans.map((plan) => (
@@ -31,18 +24,8 @@ const t = useTranslations(lang).pricing;
           </div>
 
           <div class="plan-price">
-            <div class="price-monthly">
-              <span class="price-amount">{plan.priceMonthly === 0 ? (lang === 'en' ? 'Free' : 'Gratis') : `$${plan.priceMonthly}`}</span>
-              {plan.priceMonthly > 0 && <span class="price-period">/ {lang === 'en' ? 'mo' : 'mes'}</span>}
-            </div>
-            <div class="price-annual" style="display:none">
-              {'priceAnnual' in plan && (
-                <>
-                  <span class="price-amount">{plan.priceAnnual === 0 ? (lang === 'en' ? 'Free' : 'Gratis') : `$${(plan.priceAnnual as number).toFixed(2)}`}</span>
-                  {(plan.priceAnnual as number) > 0 && <span class="price-period">/ {lang === 'en' ? 'mo' : 'mes'} · <strong>${'annualTotal' in plan ? plan.annualTotal : ''}/{lang === 'en' ? 'yr' : 'año'}</strong></span>}
-                </>
-              )}
-            </div>
+            <span class="price-amount">{plan.priceMonthly === 0 ? (lang === 'en' ? 'Free' : 'Gratis') : `$${plan.priceMonthly}`}</span>
+            {plan.priceMonthly > 0 && <span class="price-period">/ {lang === 'en' ? 'mo' : 'mes'}</span>}
           </div>
 
           <p class="plan-desc">{plan.desc}</p>
@@ -59,7 +42,12 @@ const t = useTranslations(lang).pricing;
             ))}
           </ul>
 
-          <a href="#" class={`btn plan-cta ${plan.id === 'pro' ? 'btn-primary' : 'btn-ghost'}`} data-coming-soon>
+          <a
+            href={`${base}/#download`}
+            class={`btn plan-cta ${plan.id === 'pro' ? 'btn-primary' : 'btn-ghost'}`}
+            data-track="plan_click"
+            data-track-plan={plan.id}
+          >
             {plan.cta}
           </a>
         </div>
@@ -86,45 +74,6 @@ const t = useTranslations(lang).pricing;
   max-width: 480px;
   line-height: 1.65;
   margin-bottom: 40px;
-}
-
-.billing-toggle {
-  display: inline-flex;
-  background: rgba(255 255 255 / 0.05);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  padding: 4px;
-  gap: 4px;
-  margin-bottom: 48px;
-}
-
-.billing-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 500;
-  padding: 7px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-.billing-btn--active {
-  background: var(--bg-surface);
-  color: var(--text);
-}
-
-.save-badge {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--emerald);
-  background: var(--emerald-dim);
-  padding: 2px 7px;
-  border-radius: 99px;
 }
 
 .pricing__grid {
@@ -250,18 +199,3 @@ const t = useTranslations(lang).pricing;
 }
 </style>
 
-<script>
-  const btns = document.querySelectorAll('.billing-btn');
-  btns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const billing = (btn as HTMLElement).dataset.billing;
-      btns.forEach(b => b.classList.toggle('billing-btn--active', b === btn));
-      document.querySelectorAll('.price-monthly').forEach(el => {
-        (el as HTMLElement).style.display = billing === 'monthly' ? '' : 'none';
-      });
-      document.querySelectorAll('.price-annual').forEach(el => {
-        (el as HTMLElement).style.display = billing === 'annual' ? '' : 'none';
-      });
-    });
-  });
-</script>
