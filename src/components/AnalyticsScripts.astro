@@ -1,0 +1,24 @@
+---
+import Analytics from '@vercel/analytics/astro';
+import { UMAMI, IS_PRODUCTION } from '../config';
+
+/**
+ * Único punto donde se inyecta analítica. La condición se evalúa en tiempo de
+ * build, así que en desarrollo y en los previews de Vercel estos scripts no
+ * llegan siquiera al HTML: no hay nada que bloquear ni que filtrar después.
+ */
+---
+
+{
+  IS_PRODUCTION && (
+    <>
+      <Analytics />
+      <script
+        is:inline
+        defer
+        src={UMAMI.scriptUrl}
+        data-website-id={UMAMI.websiteId}
+      />
+    </>
+  )
+}

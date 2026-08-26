@@ -1,0 +1,200 @@
+---
+/**
+ * Instrumentación global por delegación: registra toda interacción del sitio sin
+ * tener que tocar cada componente. Para casos concretos basta añadir
+ * `data-track="nombre_evento"` y cuantos `data-track-*` se quieran como
+ * propiedades; el resto se clasifica solo.
+ *
+ * Portado de auris-page. Sin el bloque de formularios: aquí no hay ninguno.
+ */
+---
+
+<script>
+  import { track, type TrackProps } from '../lib/analytics';
+
+  // Un único AbortController por navegación: si algún día se activan las view
+  // transitions, se aborta todo de golpe y no quedan listeners duplicados.
+  let controller: AbortController | null = null;
+
+  function propsFrom(el: HTMLElement): TrackProps {
+    const props: TrackProps = {};
+    for (const [key, value] of Object.entries(el.dataset)) {
+      if (key === 'track' || !key.startsWith('track') || !value) continue;
+      // dataset convierte data-track-plataforma en trackPlataforma
+      const name = key.slice(5);
+      props[name.charAt(0).toLowerCase() + name.slice(1)] = value;
+    }
+    return props;
+  }
+
+  function initClicks(signal: AbortSignal) {
+    document.addEventListener(
+      'click',
+      (event) => {
+        const target = event.target as HTMLElement | null;
+        if (!target) return;
+
+        // 1. Elementos marcados explícitamente
+        const tagged = target.closest<HTMLElement>('[data-track]');
+        if (tagged) {
+          track(tagged.dataset.track!, {
+            ...propsFrom(tagged),
+            texto: tagged.textContent?.trim().slice(0, 60),
+          });
+          return;
+        }
+
+        // 2. Enlaces sin marcar: se clasifican por su destino
+        const link = target.closest<HTMLAnchorElement>('a[href]');
+        if (!link) return;
+
+        const href = link.getAttribute('href') ?? '';
+        const texto = link.textContent?.trim().slice(0, 60);
+
+        if (href.startsWith('mailto:')) {
+          track('email_click', { destino: href.replace('mailto:', ''), texto });
+        } else if (/^https?:\/\//.test(href) && !href.includes(location.host)) {
+          track('outbound_click', { destino: new URL(href).hostname, texto });
+        } else if (href.includes('#')) {
+          track('ancla_click', { destino: `#${href.split('#')[1]}`, texto });
+        } else {
+          track('nav_interna', { destino: href, texto });
+        }
+      },
+      { signal },
+    );
+  }
+
+  function initScrollDepth(signal: AbortSignal) {
+    const hitos = [25, 50, 75, 100];
+    const alcanzados = new Set<number>();
+
+    const onScroll = () => {
+      const alcance = document.documentElement.scrollHeight - window.innerHeight;
+      if (alcance <= 0) return;
+      const pct = Math.round((window.scrollY / alcance) * 100);
+
+      for (const hito of hitos) {
+        if (pct >= hito && !alcanzados.has(hito)) {
+          alcanzados.add(hito);
+          track('scroll_depth', { profundidad: hito });
+        }
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true, signal });
+  }
+
+  function initSectionViews(signal: AbortSignal) {
+    const secciones = document.querySelectorAll<HTMLElement>('section[id]');
+    if (!secciones.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          track('section_view', { seccion: entry.target.id });
+          observer.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.35 },
+    );
+
+    secciones.forEach((s) => observer.observe(s));
+    signal.addEventListener('abort', () => observer.disconnect());
+  }
+
+  function initFaq(signal: AbortSignal) {
+    document
+      .querySelectorAll<HTMLDetailsElement>('details[data-faq]')
+      .forEach((details) => {
+        details.addEventListener(
+          'toggle',
+          () => {
+            if (!details.open) return;
+            track('faq_open', { pregunta: details.dataset.faq?.slice(0, 90) });
+          },
+          { signal },
+        );
+      });
+  }
+
+  function initEngagement(signal: AbortSignal) {
+    let inicio = performance.now();
+    let acumulado = 0;
+    let enviado = false;
+
+    const pausar = () => {
+      acumulado += performance.now() - inicio;
+    };
+    const reanudar = () => {
+      inicio = performance.now();
+    };
+
+    const enviar = () => {
+      if (enviado) return;
+      enviado = true;
+      pausar();
+      const segundos = Math.round(acumulado / 1000);
+      // Por debajo de 2s es un rebote inmediato: no aporta nada al informe.
+      if (segundos >= 2) {
+        track('page_engagement', { segundos, ruta: location.pathname });
+      }
+    };
+
+    document.addEventListener(
+      'visibilitychange',
+      () => {
+        if (document.visibilityState === 'hidden') {
+          pausar();
+          enviar();
+        } else {
+          reanudar();
+        }
+      },
+      { signal },
+    );
+
+    window.addEventListener('pagehide', enviar, { signal });
+  }
+
+  function initErrors(signal: AbortSignal) {
+    window.addEventListener(
+      'error',
+      (event) => {
+        track('js_error', {
+          mensaje: event.message?.slice(0, 120),
+          origen: event.filename?.split('/').pop(),
+          linea: event.lineno,
+        });
+      },
+      { signal },
+    );
+
+    window.addEventListener(
+      'unhandledrejection',
+      (event) => {
+        track('js_error', {
+          mensaje: String(event.reason).slice(0, 120),
+          tipo: 'promesa',
+        });
+      },
+      { signal },
+    );
+  }
+
+  function start() {
+    controller?.abort();
+    controller = new AbortController();
+    const { signal } = controller;
+
+    initClicks(signal);
+    initScrollDepth(signal);
+    initSectionViews(signal);
+    initFaq(signal);
+    initEngagement(signal);
+    initErrors(signal);
+  }
+
+  start();
+</script>
