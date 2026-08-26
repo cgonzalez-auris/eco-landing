@@ -94,8 +94,8 @@ export const ui = {
     pricing: {
       label: 'Precios',
       title: 'Transparente. Sin sorpresas.',
-      subtitle: 'Cancela cuando quieras. Pagos procesados de forma segura por Paddle.',
-      footerNote: 'Pagos procesados por Paddle · Cancela en cualquier momento',
+      subtitle: 'Cancela cuando quieras. El mismo precio en las tres tiendas.',
+      footerNote: 'Precios en USD. Verás el equivalente en tu moneda, con los impuestos que aplique cada tienda · Cancela en cualquier momento',
       plans: [
         {
           id: 'free',
@@ -288,8 +288,8 @@ export const ui = {
     pricing: {
       label: 'Pricing',
       title: 'Transparent. No surprises.',
-      subtitle: 'Cancel anytime. Payments securely processed by Paddle.',
-      footerNote: 'Payments processed by Paddle · Cancel anytime',
+      subtitle: 'Cancel anytime. The same price across all three stores.',
+      footerNote: 'Prices in USD. You will see the equivalent in your currency, with whatever tax each store applies · Cancel anytime',
       plans: [
         {
           id: 'free',
