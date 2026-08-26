@@ -10,6 +10,11 @@ export interface Props {
   description?: string;
   canonical?: string;
   ogImage?: string;
+  /** Rutas equivalentes en cada idioma, para hreflang. Por defecto, el home. */
+  alternates?: { es: string; en: string };
+  /** El JSON-LD de producto solo tiene sentido donde se habla de la app. Las
+   *  páginas de herramientas traen el suyo propio y lo desactivan. */
+  productJsonLd?: boolean;
 }
 
 const {
@@ -21,16 +26,17 @@ const {
     ? 'Eco captures your microphone and system audio, transcribes and translates in real time. For meetings, classes, and videos in another language. Mac, iPhone and Android.'
     : 'Eco captura el audio de tu micrófono y del sistema, transcribe y traduce en tiempo real. Para reuniones, clases y videos en otro idioma. Mac, iPhone y Android.',
   canonical = Astro.url.href,
-  ogImage = '/og-image.png',
+  ogImage = lang === 'en' ? '/og-image-en.png' : '/og-image.png',
+  alternates = { es: '/', en: '/en/' },
+  productJsonLd = true,
 } = Astro.props;
 
 const siteUrl = 'https://ecotranslate.app';
 const ogImageAbsolute = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`;
 const ogLocale = lang === 'en' ? 'en_US' : 'es_ES';
 
-const isHome = Astro.url.pathname === '/' || Astro.url.pathname === '/en/';
-const altEs = `${siteUrl}/`;
-const altEn = `${siteUrl}/en/`;
+const altEs = `${siteUrl}${alternates.es}`;
+const altEn = `${siteUrl}${alternates.en}`;
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -106,7 +112,7 @@ const jsonLd = {
     />
 
     <!-- JSON-LD -->
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    {productJsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
 
     <!-- Analítica: Umami + Vercel Web Analytics, solo en producción -->
     <AnalyticsScripts />
