@@ -1,0 +1,164 @@
+---
+import type { Lang } from '../../../i18n/ui';
+import { useToolTranslations } from '../../../i18n/tools';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const u = useToolTranslations(lang).widgets.tts;
+
+const labels = JSON.stringify({
+  speakLabel: u.speakLabel,
+  pauseLabel: u.pauseLabel,
+  resumeLabel: u.resumeLabel,
+  noVoices: u.noVoices,
+  unsupported: u.unsupported,
+});
+---
+
+<div class="tool-widget" id="w-tts" data-labels={labels}>
+  <p class="tool-alert tool-alert--error" data-error hidden></p>
+
+  <div class="tool-field">
+    <label class="tool-label" for="w-tts-text">{u.textLabel}</label>
+    <textarea class="tool-textarea tts-text" id="w-tts-text" data-text placeholder={u.textPlaceholder}></textarea>
+  </div>
+
+  <div class="tool-field">
+    <label class="tool-label" for="w-tts-voice">{u.voiceLabel}</label>
+    <select class="tool-select" id="w-tts-voice" data-voice></select>
+  </div>
+
+  <div class="tool-row">
+    <div class="tool-field">
+      <label class="tool-label" for="w-tts-rate">{u.rateLabel} · <span data-rate-value>1.0</span>×</label>
+      <input class="tool-range" type="range" id="w-tts-rate" data-rate min="0.5" max="2" step="0.1" value="1" />
+    </div>
+    <div class="tool-field">
+      <label class="tool-label" for="w-tts-pitch">{u.pitchLabel} · <span data-pitch-value>1.0</span></label>
+      <input class="tool-range" type="range" id="w-tts-pitch" data-pitch min="0" max="2" step="0.1" value="1" />
+    </div>
+  </div>
+
+  <div class="tool-actions">
+    <button type="button" class="tool-btn tool-btn--primary" data-speak data-tool-action="speak">{u.speakLabel}</button>
+    <button type="button" class="tool-btn" data-stop data-tool-action="stop">{u.stopLabel}</button>
+  </div>
+
+  <p class="tool-note">{u.downloadNote}</p>
+</div>
+
+<style>
+.tts-text { min-height: 170px; font-family: var(--font-body); font-size: 15px; }
+</style>
+
+<script>
+  import { reportToolUseOnce } from '../../../lib/tool-analytics';
+
+  const root = document.getElementById('w-tts');
+
+  if (root) {
+    const labels = JSON.parse(root.dataset.labels ?? '{}');
+    const text = root.querySelector<HTMLTextAreaElement>('[data-text]');
+    const voiceSelect = root.querySelector<HTMLSelectElement>('[data-voice]');
+    const rate = root.querySelector<HTMLInputElement>('[data-rate]');
+    const pitch = root.querySelector<HTMLInputElement>('[data-pitch]');
+    const rateValue = root.querySelector<HTMLElement>('[data-rate-value]');
+    const pitchValue = root.querySelector<HTMLElement>('[data-pitch-value]');
+    const speakBtn = root.querySelector<HTMLButtonElement>('[data-speak]');
+    const stopBtn = root.querySelector<HTMLButtonElement>('[data-stop]');
+    const errorBox = root.querySelector<HTMLElement>('[data-error]');
+
+    const synth = window.speechSynthesis;
+
+    if (!synth) {
+      if (errorBox) {
+        errorBox.textContent = labels.unsupported;
+        errorBox.hidden = false;
+      }
+      [speakBtn, stopBtn].forEach(button => button && (button.disabled = true));
+    } else {
+      let voices: SpeechSynthesisVoice[] = [];
+
+      function loadVoices() {
+        voices = synth.getVoices();
+        if (!voiceSelect) return;
+
+        if (!voices.length) {
+          // Chrome devuelve la lista vacía en la primera llamada y avisa después.
+          voiceSelect.innerHTML = `<option>${labels.noVoices}</option>`;
+          return;
+        }
+
+        const pageLang = document.documentElement.lang || 'es';
+        voiceSelect.innerHTML = voices
+          .map(
+            (voice, i) =>
+              `<option value="${i}">${voice.name} — ${voice.lang}${voice.default ? ' ★' : ''}</option>`,
+          )
+          .join('');
+
+        const preferred = voices.findIndex(voice => voice.lang.startsWith(pageLang));
+        if (preferred >= 0) voiceSelect.value = String(preferred);
+      }
+
+      loadVoices();
+      synth.addEventListener('voiceschanged', loadVoices);
+
+      rate?.addEventListener('input', () => {
+        if (rateValue) rateValue.textContent = Number(rate.value).toFixed(1);
+      });
+      pitch?.addEventListener('input', () => {
+        if (pitchValue) pitchValue.textContent = Number(pitch.value).toFixed(1);
+      });
+
+      function setSpeakLabel() {
+        if (!speakBtn) return;
+        speakBtn.textContent = synth.paused
+          ? labels.resumeLabel
+          : synth.speaking
+            ? labels.pauseLabel
+            : labels.speakLabel;
+      }
+
+      speakBtn?.addEventListener('click', () => {
+        if (synth.paused) {
+          synth.resume();
+          setSpeakLabel();
+          return;
+        }
+        if (synth.speaking) {
+          synth.pause();
+          setSpeakLabel();
+          return;
+        }
+
+        const value = text?.value.trim();
+        if (!value) return;
+
+        const utterance = new SpeechSynthesisUtterance(value);
+        const voice = voices[Number(voiceSelect?.value)];
+        if (voice) {
+          utterance.voice = voice;
+          utterance.lang = voice.lang;
+        }
+        utterance.rate = Number(rate?.value) || 1;
+        utterance.pitch = Number(pitch?.value) || 1;
+        utterance.addEventListener('end', setSpeakLabel);
+        utterance.addEventListener('error', setSpeakLabel);
+
+        synth.speak(utterance);
+        reportToolUseOnce('speak_started');
+        setSpeakLabel();
+      });
+
+      stopBtn?.addEventListener('click', () => {
+        synth.cancel();
+        setSpeakLabel();
+      });
+
+      // Si la pestaña se cierra con la síntesis en marcha, algunos navegadores
+      // la siguen reproduciendo. Cancelar al salir lo evita.
+      window.addEventListener('pagehide', () => synth.cancel());
+    }
+  }
+</script>

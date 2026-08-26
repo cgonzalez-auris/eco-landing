@@ -1,0 +1,241 @@
+---
+import type { Lang } from '../../../i18n/ui';
+import { useToolTranslations } from '../../../i18n/tools';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const u = useToolTranslations(lang).widgets.stt;
+
+/**
+ * Locales BCP 47 que el reconocimiento del navegador cubre bien. Los nombres
+ * los pone CLDR en tiempo de build, así que la lista es solo de códigos.
+ */
+const LOCALES = [
+  'es-ES', 'es-MX', 'es-AR', 'es-CO', 'es-CL', 'en-US', 'en-GB', 'pt-BR', 'pt-PT',
+  'fr-FR', 'de-DE', 'it-IT', 'nl-NL', 'ja-JP', 'ko-KR', 'zh-CN', 'zh-TW', 'ru-RU',
+  'ar-SA', 'hi-IN', 'pl-PL', 'tr-TR', 'sv-SE', 'da-DK', 'nb-NO', 'fi-FI', 'cs-CZ',
+  'el-GR', 'he-IL', 'hu-HU', 'id-ID', 'ro-RO', 'th-TH', 'uk-UA', 'vi-VN',
+];
+
+const display = new Intl.DisplayNames([lang], { type: 'language' });
+const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
+
+const options = LOCALES
+  .map(code => ({ code, label: capitalize(display.of(code) ?? code) }))
+  .sort((a, b) => a.label.localeCompare(b.label, lang));
+
+const defaultLocale = lang === 'en' ? 'en-US' : 'es-ES';
+
+const labels = JSON.stringify({
+  startLabel: u.startLabel,
+  stopLabel: u.stopLabel,
+  listeningLabel: u.listeningLabel,
+  unsupported: u.unsupported,
+  permissionDenied: u.permissionDenied,
+  copiedLabel: u.copiedLabel,
+});
+---
+
+<div class="tool-widget" id="w-stt" data-labels={labels}>
+  <p class="tool-alert tool-alert--error" data-error hidden></p>
+
+  <div class="tool-row">
+    <div class="tool-field">
+      <label class="tool-label" for="w-stt-lang">{u.langLabel}</label>
+      <select class="tool-select" id="w-stt-lang" data-lang>
+        {options.map(option => (
+          <option value={option.code} selected={option.code === defaultLocale}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  </div>
+
+  <div class="tool-actions">
+    <button type="button" class="tool-btn tool-btn--primary" data-toggle data-tool-action="dictate">{u.startLabel}</button>
+    <span class="stt-status" data-status hidden>
+      <span class="stt-dot" aria-hidden="true"></span>
+      {u.listeningLabel}
+    </span>
+  </div>
+
+  <div class="tool-field">
+    <label class="tool-label" for="w-stt-text">{u.transcriptLabel}</label>
+    <textarea class="tool-textarea stt-transcript" id="w-stt-text" data-transcript placeholder={u.transcriptPlaceholder}></textarea>
+    <p class="stt-interim" data-interim></p>
+  </div>
+
+  <div class="tool-actions">
+    <button type="button" class="tool-btn" data-copy data-tool-action="copy">{u.copyLabel}</button>
+    <button type="button" class="tool-btn" data-txt data-tool-action="download_txt">{u.downloadTxt}</button>
+    <button type="button" class="tool-btn" data-srt data-tool-action="download_srt">{u.downloadSrt}</button>
+    <button type="button" class="tool-btn tool-btn--danger" data-clear data-tool-action="clear">{u.clearLabel}</button>
+  </div>
+
+  <p class="tool-note">{u.engineNote}</p>
+</div>
+
+<style>
+.stt-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--emerald);
+}
+.stt-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--emerald);
+  animation: stt-pulse 1.4s ease-in-out infinite;
+}
+@keyframes stt-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.75); }
+}
+.stt-transcript { min-height: 190px; font-family: var(--font-body); font-size: 15px; }
+.stt-interim {
+  min-height: 20px;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--text-faint);
+}
+</style>
+
+<script>
+  import { copyText, downloadText, flashLabel } from '../../../lib/download';
+  import { reportToolUseOnce } from '../../../lib/tool-analytics';
+  import { type Cue, toSrt } from '../../../lib/subtitles';
+
+  const root = document.getElementById('w-stt');
+
+  if (root) {
+    const labels = JSON.parse(root.dataset.labels ?? '{}');
+    const langSelect = root.querySelector<HTMLSelectElement>('[data-lang]');
+    const toggle = root.querySelector<HTMLButtonElement>('[data-toggle]');
+    const status = root.querySelector<HTMLElement>('[data-status]');
+    const transcript = root.querySelector<HTMLTextAreaElement>('[data-transcript]');
+    const interim = root.querySelector<HTMLElement>('[data-interim]');
+    const errorBox = root.querySelector<HTMLElement>('[data-error]');
+    const copyBtn = root.querySelector<HTMLButtonElement>('[data-copy]');
+
+    const Recognition =
+      (window as any).SpeechRecognition ?? (window as any).webkitSpeechRecognition;
+
+    function fail(message: string) {
+      if (!errorBox) return;
+      errorBox.textContent = message;
+      errorBox.hidden = false;
+    }
+
+    if (!Recognition) {
+      fail(labels.unsupported);
+      if (toggle) toggle.disabled = true;
+      if (langSelect) langSelect.disabled = true;
+    } else {
+      let recognition: any = null;
+      let listening = false;
+      /** Marcas de tiempo de cada fragmento confirmado, para poder exportar a SRT. */
+      const segments: { start: number; end: number; text: string }[] = [];
+      let sessionStart = 0;
+
+      function setListening(value: boolean) {
+        listening = value;
+        if (toggle) toggle.textContent = value ? labels.stopLabel : labels.startLabel;
+        if (status) status.hidden = !value;
+        if (langSelect) langSelect.disabled = value;
+        if (!value && interim) interim.textContent = '';
+      }
+
+      function start() {
+        recognition = new Recognition();
+        recognition.lang = langSelect?.value ?? 'es-ES';
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        sessionStart = sessionStart || performance.now();
+        let segmentStart = performance.now() - sessionStart;
+
+        recognition.addEventListener('result', (event: any) => {
+          let pending = '';
+
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const result = event.results[i];
+            const text = result[0].transcript.trim();
+            if (!text) continue;
+
+            if (result.isFinal) {
+              reportToolUseOnce('transcribed');
+              const end = performance.now() - sessionStart;
+              segments.push({ start: segmentStart, end, text });
+              segmentStart = end;
+              if (transcript) {
+                transcript.value = `${transcript.value}${transcript.value ? ' ' : ''}${text}`;
+                transcript.scrollTop = transcript.scrollHeight;
+              }
+            } else {
+              pending = text;
+            }
+          }
+          if (interim) interim.textContent = pending;
+        });
+
+        recognition.addEventListener('error', (event: any) => {
+          if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+            fail(labels.permissionDenied);
+            setListening(false);
+          }
+        });
+
+        // Chrome corta la sesión sola cada cierto tiempo: si el usuario no ha
+        // pulsado Detener, se vuelve a arrancar y la dictada sigue.
+        recognition.addEventListener('end', () => {
+          if (listening) start();
+          else setListening(false);
+        });
+
+        recognition.start();
+        setListening(true);
+      }
+
+      toggle?.addEventListener('click', () => {
+        if (listening) {
+          setListening(false);
+          recognition?.stop();
+        } else {
+          if (errorBox) errorBox.hidden = true;
+          start();
+        }
+      });
+
+      root.querySelector('[data-clear]')?.addEventListener('click', () => {
+        if (transcript) transcript.value = '';
+        if (interim) interim.textContent = '';
+        segments.length = 0;
+        sessionStart = 0;
+      });
+
+      copyBtn?.addEventListener('click', async () => {
+        const text = transcript?.value ?? '';
+        if (text && (await copyText(text))) flashLabel(copyBtn, labels.copiedLabel);
+      });
+
+      root.querySelector('[data-txt]')?.addEventListener('click', () => {
+        if (transcript?.value) downloadText('transcript.txt', `${transcript.value}\n`);
+      });
+
+      root.querySelector('[data-srt]')?.addEventListener('click', () => {
+        if (!segments.length) return;
+        const cues: Cue[] = segments.map(segment => ({
+          start: segment.start,
+          end: Math.max(segment.end, segment.start + 800),
+          lines: [segment.text],
+        }));
+        downloadText('transcript.srt', toSrt(cues));
+      });
+    }
+  }
+</script>

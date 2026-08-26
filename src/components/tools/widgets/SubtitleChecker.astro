@@ -1,0 +1,219 @@
+---
+import FileDrop from '../FileDrop.astro';
+import type { Lang } from '../../../i18n/ui';
+import { useToolTranslations } from '../../../i18n/tools';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const w = useToolTranslations(lang).widgets;
+const u = w.checker;
+const s = w.subtitle;
+
+const labels = JSON.stringify({
+  parseError: s.parseError,
+  emptyError: s.emptyError,
+  summaryOk: u.summaryOk,
+  summaryIssues: u.summaryIssues,
+  summaryIssuesOne: u.summaryIssuesOne,
+  cuesLabel: s.cuesLabel,
+  cueLabelOne: s.cueLabelOne,
+  issues: {
+    cps: u.issueCps,
+    lineLength: u.issueLineLength,
+    lines: u.issueLines,
+    short: u.issueShort,
+    long: u.issueLong,
+    overlap: u.issueOverlap,
+  },
+});
+
+/** Los dos juegos de límites que usa casi todo el mundo. */
+const presets = JSON.stringify({
+  netflix: { cps: 17, cpl: 42, lines: 2, min: 0.83, max: 7 },
+  bbc: { cps: 20, cpl: 37, lines: 2, min: 1, max: 7 },
+});
+---
+
+<div class="tool-widget" id="w-checker" data-labels={labels} data-presets={presets}>
+  <FileDrop id="w-checker-drop" main={s.dropLabel} sub={s.browseLabel} accept=".srt,.vtt,.txt,text/plain" />
+
+  <div class="tool-file" data-file hidden>
+    <span class="tool-file__name" data-file-name></span>
+    <span class="tool-file__meta" data-file-meta></span>
+  </div>
+
+  <div class="tool-field">
+    <label class="tool-label" for="w-checker-preset">{u.presetLabel}</label>
+    <select class="tool-select" id="w-checker-preset" data-preset>
+      <option value="netflix">{u.presetNetflix}</option>
+      <option value="bbc">{u.presetBbc}</option>
+      <option value="custom">{u.presetCustom}</option>
+    </select>
+  </div>
+
+  <div class="checker-limits">
+    <div class="tool-field">
+      <label class="tool-label" for="w-checker-cps">{u.maxCpsLabel}</label>
+      <input class="tool-input" type="number" id="w-checker-cps" data-limit="cps" value="17" min="1" step="0.5" />
+    </div>
+    <div class="tool-field">
+      <label class="tool-label" for="w-checker-cpl">{u.maxCharsPerLineLabel}</label>
+      <input class="tool-input" type="number" id="w-checker-cpl" data-limit="cpl" value="42" min="10" />
+    </div>
+    <div class="tool-field">
+      <label class="tool-label" for="w-checker-lines">{u.maxLinesLabel}</label>
+      <input class="tool-input" type="number" id="w-checker-lines" data-limit="lines" value="2" min="1" />
+    </div>
+    <div class="tool-field">
+      <label class="tool-label" for="w-checker-min">{u.minDurationLabel}</label>
+      <input class="tool-input" type="number" id="w-checker-min" data-limit="min" value="0.83" min="0" step="0.01" />
+    </div>
+    <div class="tool-field">
+      <label class="tool-label" for="w-checker-max">{u.maxDurationLabel}</label>
+      <input class="tool-input" type="number" id="w-checker-max" data-limit="max" value="7" min="1" step="0.5" />
+    </div>
+  </div>
+
+  <p class="tool-alert tool-alert--error" data-error hidden></p>
+  <p class="tool-alert" data-summary hidden></p>
+
+  <div class="tool-table-wrap" data-table-wrap hidden>
+    <table class="tool-table">
+      <thead>
+        <tr>
+          <th>{u.colCue}</th>
+          <th>{u.colTime}</th>
+          <th>{u.colIssue}</th>
+        </tr>
+      </thead>
+      <tbody data-tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+.checker-limits {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+}
+</style>
+
+<script>
+  import { type Cue, detectFormat, formatTimestamp, parseSubtitles, plainText } from '../../../lib/subtitles';
+  import { pluralize } from '../../../lib/download';
+  import { reportToolUseOnce } from '../../../lib/tool-analytics';
+
+  const root = document.getElementById('w-checker');
+
+  if (root) {
+    const labels = JSON.parse(root.dataset.labels ?? '{}');
+    const presets = JSON.parse(root.dataset.presets ?? '{}');
+    const presetSelect = root.querySelector<HTMLSelectElement>('[data-preset]');
+    const limits = Array.from(root.querySelectorAll<HTMLInputElement>('[data-limit]'));
+    const fileRow = root.querySelector<HTMLElement>('[data-file]');
+    const fileName = root.querySelector<HTMLElement>('[data-file-name]');
+    const fileMeta = root.querySelector<HTMLElement>('[data-file-meta]');
+    const errorBox = root.querySelector<HTMLElement>('[data-error]');
+    const summary = root.querySelector<HTMLElement>('[data-summary]');
+    const tableWrap = root.querySelector<HTMLElement>('[data-table-wrap]');
+    const tbody = root.querySelector<HTMLElement>('[data-tbody]');
+
+    let cues: Cue[] = [];
+    let format: 'srt' | 'vtt' = 'srt';
+
+    const limitValue = (name: string) =>
+      Number(limits.find(input => input.dataset.limit === name)?.value) || 0;
+
+    function check() {
+      if (!cues.length || !tbody || !summary || !tableWrap) return;
+
+      const maxCps = limitValue('cps');
+      const maxCpl = limitValue('cpl');
+      const maxLines = limitValue('lines');
+      const minDuration = limitValue('min') * 1000;
+      const maxDuration = limitValue('max') * 1000;
+
+      const rows: string[] = [];
+      let failing = 0;
+
+      cues.forEach((cue, i) => {
+        const problems: string[] = [];
+        const duration = cue.end - cue.start;
+        const text = plainText(cue);
+        const seconds = duration / 1000;
+
+        if (seconds > 0 && text.length / seconds > maxCps) problems.push(labels.issues.cps);
+        if (cue.lines.some(line => line.length > maxCpl)) problems.push(labels.issues.lineLength);
+        if (cue.lines.length > maxLines) problems.push(labels.issues.lines);
+        if (duration < minDuration) problems.push(labels.issues.short);
+        if (duration > maxDuration) problems.push(labels.issues.long);
+        if (i > 0 && cue.start < cues[i - 1].end) problems.push(labels.issues.overlap);
+
+        if (!problems.length) return;
+        failing++;
+        const time = `${formatTimestamp(cue.start, format)} → ${formatTimestamp(cue.end, format)}`;
+        rows.push(
+          `<tr><td>${i + 1}</td><td><code>${time}</code></td><td>${problems.join(' · ')}</td></tr>`,
+        );
+      });
+
+      reportToolUseOnce('check');
+      tbody.innerHTML = rows.join('');
+      tableWrap.hidden = failing === 0;
+      summary.hidden = false;
+      summary.className = `tool-alert tool-alert--${failing ? 'warn' : 'ok'}`;
+      summary.textContent = failing
+        ? pluralize(failing, labels.summaryIssues, labels.summaryIssuesOne)
+        : labels.summaryOk;
+    }
+
+    root.addEventListener('tool:file', event => {
+      const { name, text } = (event as CustomEvent<{ name: string; text: string }>).detail;
+
+      if (!text.trim()) {
+        errorBox && ((errorBox.textContent = labels.emptyError), (errorBox.hidden = false));
+        return;
+      }
+      try {
+        cues = parseSubtitles(text);
+        format = detectFormat(text);
+        if (errorBox) errorBox.hidden = true;
+      } catch {
+        cues = [];
+        if (errorBox) {
+          errorBox.textContent = labels.parseError;
+          errorBox.hidden = false;
+        }
+        if (summary) summary.hidden = true;
+        if (tableWrap) tableWrap.hidden = true;
+        return;
+      }
+
+      if (fileRow && fileName && fileMeta) {
+        fileName.textContent = name;
+        fileMeta.textContent = pluralize(cues.length, labels.cuesLabel, labels.cueLabelOne);
+        fileRow.hidden = false;
+      }
+      check();
+    });
+
+    presetSelect?.addEventListener('change', () => {
+      const preset = presets[presetSelect.value];
+      if (!preset) return;
+      limits.forEach(input => {
+        const value = preset[input.dataset.limit ?? ''];
+        if (value !== undefined) input.value = String(value);
+      });
+      check();
+    });
+
+    // Tocar un límite a mano deja de ser la norma elegida.
+    limits.forEach(input =>
+      input.addEventListener('input', () => {
+        if (presetSelect) presetSelect.value = 'custom';
+        check();
+      }),
+    );
+  }
+</script>

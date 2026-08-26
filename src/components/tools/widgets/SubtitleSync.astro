@@ -1,0 +1,132 @@
+---
+import SubtitleShell from '../SubtitleShell.astro';
+import type { Lang } from '../../../i18n/ui';
+import { useToolTranslations } from '../../../i18n/tools';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const u = useToolTranslations(lang).widgets.sync;
+
+const FPS = ['23.976', '24', '25', '29.97', '30'];
+const config = JSON.stringify({ negativeWarning: u.negativeWarning });
+---
+
+<SubtitleShell lang={lang} id="w-subtitle-sync" accept=".srt,.vtt,.txt,text/plain">
+  <div class="sync-controls" slot="controls" data-sync-config={config}>
+    <div class="tool-field">
+      <label class="tool-label" for="w-sync-shift">{u.shiftLabel} ({u.secondsSuffix})</label>
+      <input class="tool-input" type="number" id="w-sync-shift" data-shift value="0" step="0.1" />
+      <span class="tool-note">{u.shiftHint}</span>
+    </div>
+
+    <div class="tool-row">
+      <div class="tool-field">
+        <label class="tool-label" for="w-sync-from">{u.fpsLabel} — {u.fpsFrom}</label>
+        <select class="tool-select" id="w-sync-from" data-fps-from>
+          <option value="">{u.fpsNone}</option>
+          {FPS.map(f => <option value={f}>{f} fps</option>)}
+        </select>
+      </div>
+      <div class="tool-field">
+        <label class="tool-label" for="w-sync-to">{u.fpsLabel} — {u.fpsTo}</label>
+        <select class="tool-select" id="w-sync-to" data-fps-to>
+          <option value="">{u.fpsNone}</option>
+          {FPS.map(f => <option value={f}>{f} fps</option>)}
+        </select>
+      </div>
+    </div>
+
+    <div class="sync-preview" data-preview hidden>
+      <span class="tool-label">{u.previewLabel}</span>
+      <p><span class="sync-preview__tag">{u.beforeLabel}</span> <code data-preview-before></code></p>
+      <p><span class="sync-preview__tag">{u.afterLabel}</span> <code data-preview-after></code></p>
+    </div>
+  </div>
+</SubtitleShell>
+
+<style>
+.sync-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.sync-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: rgba(0 0 0 / 0.2);
+}
+.sync-preview p { font-size: 13px; color: var(--text-muted); }
+.sync-preview__tag {
+  display: inline-block;
+  min-width: 62px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.sync-preview code {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--cyan);
+}
+</style>
+
+<script>
+  import { initSubtitleWidget } from '../../../lib/subtitle-widget';
+  import { formatTimestamp, serialize } from '../../../lib/subtitles';
+
+  const root = document.getElementById('w-subtitle-sync');
+  const controls = document.querySelector<HTMLElement>('[data-sync-config]');
+  const shift = document.querySelector<HTMLInputElement>('[data-shift]');
+  const fpsFrom = document.querySelector<HTMLSelectElement>('[data-fps-from]');
+  const fpsTo = document.querySelector<HTMLSelectElement>('[data-fps-to]');
+  const preview = document.querySelector<HTMLElement>('[data-preview]');
+  const previewBefore = document.querySelector<HTMLElement>('[data-preview-before]');
+  const previewAfter = document.querySelector<HTMLElement>('[data-preview-after]');
+
+  if (root && controls) {
+    const config = JSON.parse(controls.dataset.syncConfig ?? '{}');
+
+    const widget = initSubtitleWidget({
+      root,
+      labels: JSON.parse(root.dataset.labels ?? '{}'),
+      transform: ({ cues, format, filename }) => {
+        const offset = (Number(shift?.value) || 0) * 1000;
+        const from = Number(fpsFrom?.value) || 0;
+        const to = Number(fpsTo?.value) || 0;
+        // Reescalar solo tiene sentido con las dos velocidades puestas.
+        const scale = from > 0 && to > 0 ? from / to : 1;
+
+        let clamped = false;
+        const shifted = cues.map(cue => {
+          const start = cue.start * scale + offset;
+          const end = cue.end * scale + offset;
+          if (start < 0 || end < 0) clamped = true;
+          return { ...cue, start: Math.max(0, start), end: Math.max(0, end) };
+        });
+
+        if (preview && previewBefore && previewAfter && cues[0]) {
+          preview.hidden = false;
+          previewBefore.textContent = `${formatTimestamp(cues[0].start, format)} --> ${formatTimestamp(cues[0].end, format)}`;
+          previewAfter.textContent = `${formatTimestamp(shifted[0].start, format)} --> ${formatTimestamp(shifted[0].end, format)}`;
+        }
+
+        return {
+          text: serialize(shifted, format),
+          filename: `${filename}-sync.${format}`,
+          warning: clamped ? config.negativeWarning : undefined,
+        };
+      },
+      onStateChange: loaded => {
+        if (preview && !loaded) preview.hidden = true;
+      },
+    });
+
+    [shift, fpsFrom, fpsTo].forEach(el => el?.addEventListener('input', widget.rerun));
+  }
+</script>

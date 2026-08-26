@@ -1,0 +1,115 @@
+---
+import type { Lang } from '../../../i18n/ui';
+import { useToolTranslations } from '../../../i18n/tools';
+import { LANGUAGES } from '../../../lib/language-data';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const u = useToolTranslations(lang).widgets.codes;
+
+/**
+ * La tabla se renderiza entera en el servidor: son los 184 idiomas los que
+ * hacen indexable esta página, y un filtro en cliente no ayudaría a Google.
+ */
+const rows = LANGUAGES.map(language => ({
+  ...language,
+  name: lang === 'en' ? language.en : language.es,
+  // Se busca por cualquier campo, incluidos los locales y el otro idioma.
+  search: [language.en, language.es, language.native, language.iso1, language.iso3, ...(language.locales ?? [])]
+    .join(' ')
+    .toLowerCase(),
+}));
+
+const labels = JSON.stringify({
+  countLabel: u.countLabel,
+  countLabelOne: u.countLabelOne,
+  noResults: u.noResults,
+});
+---
+
+<div class="tool-widget" id="w-codes" data-labels={labels}>
+  <div class="tool-field">
+    <label class="tool-label" for="w-codes-search">{u.searchLabel}</label>
+    <input class="tool-input" type="search" id="w-codes-search" data-search placeholder={u.searchPlaceholder} autocomplete="off" />
+  </div>
+
+  <p class="tool-count" data-count>{u.countLabel.replace('{n}', String(rows.length))}</p>
+  <p class="tool-alert tool-alert--warn" data-empty hidden>{u.noResults}</p>
+
+  <div class="tool-table-wrap">
+    <table class="tool-table">
+      <thead>
+        <tr>
+          <th>{u.colName}</th>
+          <th>{u.colNative}</th>
+          <th>{u.colIso1}</th>
+          <th>{u.colIso3}</th>
+          <th>{u.colLocales}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map(row => (
+          <tr data-row data-search-text={row.search}>
+            <td class="tool-table__name">{row.name}</td>
+            <td>{row.native}</td>
+            <td><button type="button" class="tool-code" data-copy-code>{row.iso1}</button></td>
+            <td><button type="button" class="tool-code" data-copy-code>{row.iso3}</button></td>
+            <td>
+              {(row.locales ?? []).map(locale => (
+                <button type="button" class="tool-code" data-copy-code>{locale}</button>
+              ))}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  import { copyText, pluralize } from '../../../lib/download';
+  import { reportToolUse, reportToolUseOnce } from '../../../lib/tool-analytics';
+
+  const root = document.getElementById('w-codes');
+
+  if (root) {
+    const labels = JSON.parse(root.dataset.labels ?? '{}');
+    const search = root.querySelector<HTMLInputElement>('[data-search]');
+    const count = root.querySelector<HTMLElement>('[data-count]');
+    const empty = root.querySelector<HTMLElement>('[data-empty]');
+    const rows = Array.from(root.querySelectorAll<HTMLTableRowElement>('[data-row]'));
+
+    search?.addEventListener('input', () => {
+      const query = search.value.trim().toLowerCase();
+      if (query) reportToolUseOnce('search');
+      let visible = 0;
+
+      for (const row of rows) {
+        const match = !query || (row.dataset.searchText ?? '').includes(query);
+        row.hidden = !match;
+        if (match) visible++;
+      }
+
+      if (count) count.textContent = pluralize(visible, labels.countLabel, labels.countLabelOne);
+      if (empty) empty.hidden = visible > 0;
+    });
+
+    // Copiar el código es lo que viene a hacer casi todo el mundo aquí.
+    root.addEventListener('click', async event => {
+      const button = (event.target as HTMLElement).closest<HTMLElement>('[data-copy-code]');
+      if (!button) return;
+      const code = button.textContent ?? '';
+      if (!(await copyText(code))) return;
+      reportToolUse('copy_code');
+      button.classList.add('is-copied');
+      window.setTimeout(() => button.classList.remove('is-copied'), 900);
+    });
+  }
+</script>
+
+<style>
+  .tool-code.is-copied {
+    background: var(--emerald-dim);
+    color: var(--emerald);
+  }
+</style>

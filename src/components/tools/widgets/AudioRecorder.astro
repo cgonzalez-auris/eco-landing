@@ -1,0 +1,270 @@
+---
+import type { Lang } from '../../../i18n/ui';
+import { useToolTranslations } from '../../../i18n/tools';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const u = useToolTranslations(lang).widgets.recorder;
+
+const labels = JSON.stringify({
+  recordLabel: u.recordLabel,
+  pauseLabel: u.pauseLabel,
+  resumeLabel: u.resumeLabel,
+  readyLabel: u.readyLabel,
+  recordingLabel: u.recordingLabel,
+  pausedLabel: u.pausedLabel,
+  permissionDenied: u.permissionDenied,
+  unsupported: u.unsupported,
+});
+---
+
+<div class="tool-widget" id="w-recorder" data-labels={labels}>
+  <p class="tool-alert tool-alert--error" data-error hidden></p>
+
+  <div class="rec-panel">
+    <div class="rec-head">
+      <span class="rec-state" data-state>{u.readyLabel}</span>
+      <span class="rec-time" data-time>00:00</span>
+    </div>
+    <div class="tool-field">
+      <span class="tool-label">{u.levelLabel}</span>
+      <div class="tool-meter"><div class="tool-meter__fill" data-level></div></div>
+    </div>
+  </div>
+
+  <div class="tool-actions">
+    <button type="button" class="tool-btn tool-btn--primary" data-record data-tool-action="record">{u.recordLabel}</button>
+    <button type="button" class="tool-btn" data-pause data-tool-action="pause" disabled>{u.pauseLabel}</button>
+    <button type="button" class="tool-btn" data-stop data-tool-action="stop" disabled>{u.stopLabel}</button>
+  </div>
+
+  <div class="rec-result" data-result hidden>
+    <audio class="rec-audio" data-audio controls></audio>
+    <div class="tool-actions">
+      <button type="button" class="tool-btn tool-btn--primary" data-download data-tool-action="download">{u.downloadLabel}</button>
+      <button type="button" class="tool-btn tool-btn--danger" data-discard data-tool-action="discard">{u.discardLabel}</button>
+    </div>
+  </div>
+
+  <p class="tool-note">{u.formatNote}</p>
+</div>
+
+<style>
+.rec-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 22px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border);
+  background: rgba(0 0 0 / 0.2);
+}
+.rec-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+.rec-state {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.rec-state[data-active] { color: var(--emerald); }
+.rec-time {
+  font-family: var(--font-mono);
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 700;
+  color: var(--white-glow);
+  font-variant-numeric: tabular-nums;
+}
+.rec-result {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.rec-audio { width: 100%; }
+</style>
+
+<script>
+  import { downloadBlob } from '../../../lib/download';
+  import { reportToolUseOnce } from '../../../lib/tool-analytics';
+
+  const root = document.getElementById('w-recorder');
+
+  if (root) {
+    const labels = JSON.parse(root.dataset.labels ?? '{}');
+    const stateEl = root.querySelector<HTMLElement>('[data-state]');
+    const timeEl = root.querySelector<HTMLElement>('[data-time]');
+    const level = root.querySelector<HTMLElement>('[data-level]');
+    const recordBtn = root.querySelector<HTMLButtonElement>('[data-record]');
+    const pauseBtn = root.querySelector<HTMLButtonElement>('[data-pause]');
+    const stopBtn = root.querySelector<HTMLButtonElement>('[data-stop]');
+    const result = root.querySelector<HTMLElement>('[data-result]');
+    const audio = root.querySelector<HTMLAudioElement>('[data-audio]');
+    const errorBox = root.querySelector<HTMLElement>('[data-error]');
+
+    const supported =
+      typeof MediaRecorder !== 'undefined' && !!navigator.mediaDevices?.getUserMedia;
+
+    if (!supported) {
+      if (errorBox) {
+        errorBox.textContent = labels.unsupported;
+        errorBox.hidden = false;
+      }
+      [recordBtn, pauseBtn, stopBtn].forEach(button => button && (button.disabled = true));
+    } else {
+      let recorder: MediaRecorder | null = null;
+      let stream: MediaStream | null = null;
+      let audioContext: AudioContext | null = null;
+      let chunks: Blob[] = [];
+      let blob: Blob | null = null;
+      let objectUrl: string | null = null;
+      let elapsed = 0;
+      let tickHandle = 0;
+      let frameHandle = 0;
+
+      const format = (seconds: number) => {
+        const m = Math.floor(seconds / 60);
+        const s = Math.floor(seconds % 60);
+        return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      };
+
+      function setState(text: string, active: boolean) {
+        if (!stateEl) return;
+        stateEl.textContent = text;
+        if (active) stateEl.setAttribute('data-active', '');
+        else stateEl.removeAttribute('data-active');
+      }
+
+      function startTimer() {
+        tickHandle = window.setInterval(() => {
+          elapsed += 1;
+          if (timeEl) timeEl.textContent = format(elapsed);
+        }, 1000);
+      }
+
+      function stopTimer() {
+        window.clearInterval(tickHandle);
+      }
+
+      /** Medidor de nivel: sirve para ver que se ha elegido el micrófono correcto. */
+      function meter(source: MediaStream) {
+        audioContext = new AudioContext();
+        const analyser = audioContext.createAnalyser();
+        analyser.fftSize = 512;
+        audioContext.createMediaStreamSource(source).connect(analyser);
+
+        const data = new Uint8Array(analyser.frequencyBinCount);
+        const draw = () => {
+          analyser.getByteTimeDomainData(data);
+          let peak = 0;
+          for (const value of data) peak = Math.max(peak, Math.abs(value - 128));
+          if (level) level.style.width = `${Math.min(100, (peak / 128) * 180)}%`;
+          frameHandle = requestAnimationFrame(draw);
+        };
+        draw();
+      }
+
+      function releaseStream() {
+        cancelAnimationFrame(frameHandle);
+        stream?.getTracks().forEach(track => track.stop());
+        void audioContext?.close();
+        audioContext = null;
+        stream = null;
+        if (level) level.style.width = '0';
+      }
+
+      recordBtn?.addEventListener('click', async () => {
+        if (recorder) return;
+        if (errorBox) errorBox.hidden = true;
+
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch {
+          reportToolUseOnce('mic_denied');
+          if (errorBox) {
+            errorBox.textContent = labels.permissionDenied;
+            errorBox.hidden = false;
+          }
+          return;
+        }
+
+        chunks = [];
+        elapsed = 0;
+        if (timeEl) timeEl.textContent = '00:00';
+        if (result) result.hidden = true;
+
+        recorder = new MediaRecorder(stream);
+        recorder.addEventListener('dataavailable', event => {
+          if (event.data.size) chunks.push(event.data);
+        });
+        recorder.addEventListener('stop', () => {
+          blob = new Blob(chunks, { type: recorder?.mimeType || 'audio/webm' });
+          if (objectUrl) URL.revokeObjectURL(objectUrl);
+          objectUrl = URL.createObjectURL(blob);
+          if (audio) audio.src = objectUrl;
+          if (result) result.hidden = false;
+          recorder = null;
+          releaseStream();
+          setState(labels.readyLabel, false);
+          if (recordBtn) recordBtn.disabled = false;
+          if (pauseBtn) {
+            pauseBtn.disabled = true;
+            pauseBtn.textContent = labels.pauseLabel;
+          }
+          if (stopBtn) stopBtn.disabled = true;
+        });
+
+        recorder.start();
+        reportToolUseOnce('recording_started');
+        meter(stream);
+        startTimer();
+        setState(labels.recordingLabel, true);
+        recordBtn.disabled = true;
+        if (pauseBtn) pauseBtn.disabled = false;
+        if (stopBtn) stopBtn.disabled = false;
+      });
+
+      pauseBtn?.addEventListener('click', () => {
+        if (!recorder) return;
+        if (recorder.state === 'recording') {
+          recorder.pause();
+          stopTimer();
+          setState(labels.pausedLabel, false);
+          pauseBtn.textContent = labels.resumeLabel;
+        } else {
+          recorder.resume();
+          startTimer();
+          setState(labels.recordingLabel, true);
+          pauseBtn.textContent = labels.pauseLabel;
+        }
+      });
+
+      stopBtn?.addEventListener('click', () => {
+        stopTimer();
+        recorder?.stop();
+      });
+
+      root.querySelector('[data-download]')?.addEventListener('click', () => {
+        if (!blob) return;
+        // El contenedor lo elige el navegador: WebM en Chrome, MP4 en Safari.
+        const extension = blob.type.includes('mp4') ? 'm4a' : 'webm';
+        downloadBlob(`recording.${extension}`, blob);
+      });
+
+      root.querySelector('[data-discard]')?.addEventListener('click', () => {
+        blob = null;
+        chunks = [];
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+        objectUrl = null;
+        if (audio) audio.removeAttribute('src');
+        if (result) result.hidden = true;
+        if (timeEl) timeEl.textContent = '00:00';
+        elapsed = 0;
+      });
+    }
+  }
+</script>

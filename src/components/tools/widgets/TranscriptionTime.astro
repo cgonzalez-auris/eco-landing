@@ -1,0 +1,96 @@
+---
+import type { Lang } from '../../../i18n/ui';
+import { useToolTranslations } from '../../../i18n/tools';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const u = useToolTranslations(lang).widgets.transcription;
+
+const labels = JSON.stringify({
+  manualResult: u.manualResult,
+  ecoResult: u.ecoResult,
+  savedResult: u.savedResult,
+});
+---
+
+<div class="tool-widget" id="w-transcription" data-labels={labels}>
+  <div class="tool-row">
+    <div class="tool-field">
+      <label class="tool-label" for="w-transcription-minutes">{u.audioLabel} ({u.minutesSuffix})</label>
+      <input class="tool-input" type="number" id="w-transcription-minutes" data-minutes value="60" min="1" step="5" />
+    </div>
+
+    <div class="tool-field">
+      <label class="tool-label" for="w-transcription-quality">{u.qualityLabel}</label>
+      <select class="tool-select" id="w-transcription-quality" data-quality>
+        <option value="clean">{u.qualityClean}</option>
+        <option value="normal" selected>{u.qualityNormal}</option>
+        <option value="hard">{u.qualityHard}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="tool-results-grid">
+    <div class="tool-result">
+      <span class="tool-result__label">{u.manualResult}</span>
+      <span class="tool-result__value" data-manual></span>
+      <span class="tool-result__hint" data-manual-ratio></span>
+    </div>
+    <div class="tool-result">
+      <span class="tool-result__label">{u.ecoResult}</span>
+      <span class="tool-result__value" data-review></span>
+      <span class="tool-result__hint" data-review-ratio></span>
+    </div>
+    <div class="tool-result">
+      <span class="tool-result__label">{u.savedResult}</span>
+      <span class="tool-result__value" data-saved></span>
+      <span class="tool-result__hint" data-saved-pct></span>
+    </div>
+  </div>
+
+  <p class="tool-note">{u.note}</p>
+</div>
+
+<script>
+  import { TRANSCRIPTION_RATIO, type AudioQuality, formatDuration } from '../../../lib/speech-rate';
+  import { reportToolUseOnce } from '../../../lib/tool-analytics';
+
+  const root = document.getElementById('w-transcription');
+
+  if (root) {
+    const minutes = root.querySelector<HTMLInputElement>('[data-minutes]');
+    const quality = root.querySelector<HTMLSelectElement>('[data-quality]');
+
+    const write = (selector: string, value: string) => {
+      const el = root.querySelector<HTMLElement>(selector);
+      if (el) el.textContent = value;
+    };
+
+    function render() {
+      const audio = Math.max(0, Number(minutes?.value) || 0);
+      const ratio = TRANSCRIPTION_RATIO[(quality?.value as AudioQuality) ?? 'normal'];
+
+      const manual = audio * ratio.manual;
+      const review = audio * ratio.review;
+      const saved = manual - review;
+
+      write('[data-manual]', formatDuration(manual));
+      write('[data-manual-ratio]', `${ratio.manual}:1`);
+      write('[data-review]', formatDuration(review));
+      write('[data-review-ratio]', `${ratio.review}:1`);
+      write('[data-saved]', formatDuration(saved));
+      write('[data-saved-pct]', manual > 0 ? `−${Math.round((saved / manual) * 100)} %` : '');
+    }
+
+    // El render inicial no cuenta como uso: solo lo que toca la persona.
+    const onInteraction = () => {
+      reportToolUseOnce('calculate');
+      render();
+    };
+    [minutes, quality].forEach(el => {
+      el?.addEventListener('input', onInteraction);
+      el?.addEventListener('change', onInteraction);
+    });
+    render();
+  }
+</script>

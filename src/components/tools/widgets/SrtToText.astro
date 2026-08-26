@@ -1,0 +1,63 @@
+---
+import SubtitleShell from '../SubtitleShell.astro';
+import type { Lang } from '../../../i18n/ui';
+import { useToolTranslations } from '../../../i18n/tools';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const u = useToolTranslations(lang).widgets.plain;
+---
+
+<SubtitleShell lang={lang} id="w-srt-to-text" accept=".srt,.vtt,.txt,text/plain">
+  <div class="tool-field" slot="controls">
+    <label class="tool-label" for="w-srt-to-text-mode">{u.formatLabel}</label>
+    <select class="tool-select" id="w-srt-to-text-mode" data-mode>
+      <option value="paragraphs">{u.modeParagraphs}</option>
+      <option value="lines">{u.modeLines}</option>
+    </select>
+  </div>
+</SubtitleShell>
+
+<script>
+  import { initSubtitleWidget } from '../../../lib/subtitle-widget';
+  import { plainText } from '../../../lib/subtitles';
+
+  const root = document.getElementById('w-srt-to-text');
+  const mode = document.querySelector<HTMLSelectElement>('#w-srt-to-text-mode');
+
+  if (root) {
+    const widget = initSubtitleWidget({
+      root,
+      labels: JSON.parse(root.dataset.labels ?? '{}'),
+      transform: ({ cues, filename }) => {
+        const texts: string[] = [];
+
+        for (const cue of cues) {
+          const text = plainText(cue);
+          if (!text) continue;
+          const previous = texts[texts.length - 1];
+          // Los subtítulos automáticos repiten el final del bloque anterior para
+          // simular scroll: sin esto el texto sale duplicado entero.
+          if (previous === text) continue;
+          if (previous && text.startsWith(previous)) {
+            texts[texts.length - 1] = text;
+            continue;
+          }
+          texts.push(text);
+        }
+
+        const paragraphs = mode?.value !== 'lines';
+        const body = paragraphs
+          ? texts
+              .join(' ')
+              // Un párrafo por punto final: el corte natural de una transcripción.
+              .replace(/([.!?…])\s+(?=[¿¡"'(\[]?[A-ZÁÉÍÓÚÑÜ0-9])/g, '$1\n\n')
+          : texts.join('\n');
+
+        return { text: `${body}\n`, filename: `${filename}.txt` };
+      },
+    });
+
+    mode?.addEventListener('change', widget.rerun);
+  }
+</script>

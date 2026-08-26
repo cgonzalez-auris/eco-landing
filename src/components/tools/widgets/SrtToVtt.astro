@@ -1,0 +1,26 @@
+---
+import SubtitleShell from '../SubtitleShell.astro';
+import type { Lang } from '../../../i18n/ui';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+---
+
+<SubtitleShell lang={lang} id="w-srt-to-vtt" accept=".srt,.txt,text/plain" />
+
+<script>
+  import { initSubtitleWidget } from '../../../lib/subtitle-widget';
+  import { toVtt } from '../../../lib/subtitles';
+
+  const root = document.getElementById('w-srt-to-vtt');
+  if (root) {
+    initSubtitleWidget({
+      root,
+      labels: JSON.parse(root.dataset.labels ?? '{}'),
+      transform: ({ cues, filename }) => ({
+        text: toVtt(cues),
+        filename: `${filename}.vtt`,
+      }),
+    });
+  }
+</script>
