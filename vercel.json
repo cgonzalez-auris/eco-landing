@@ -2,7 +2,7 @@
   "redirects": [
     {
       "source": "/download/mac",
-      "destination": "https://ngaxkwynbtmxdhfuwrub.supabase.co/storage/v1/object/public/downloads/eco/Eco-0.2.3.dmg?download=Eco-0.2.3.dmg",
+      "destination": "https://ngaxkwynbtmxdhfuwrub.supabase.co/storage/v1/object/public/downloads/eco/Eco-0.2.4.dmg?download=Eco-0.2.4.dmg",
       "permanent": false
     }
   ],

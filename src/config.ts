@@ -45,10 +45,10 @@ export const PRODUCTION_HOSTS = ['ecotranslate.app', 'www.ecotranslate.app'] as 
 export const DOWNLOAD = {
   mac: {
     path: '/download/mac',
-    version: '0.2.3',
+    version: '0.2.4',
     minOS: 'macOS 14.4+',
     /** shasum -a 256 del .dmg publicado, para quien quiera verificarlo a mano. */
-    sha256: 'bed29b8ac8978036c2c3a96604852d6b2b0082163a3357c15fd8e2aa911038ec',
+    sha256: '308a3d5086f49fb10e9be182b9e95e0fe46e79d27a1a8f464dc9d16bd05c7184',
   },
   appStore: 'https://apps.apple.com/app/id6791297799',
   playStore: 'https://play.google.com/store/apps/details?id=com.eco.mobile',
