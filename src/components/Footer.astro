@@ -1,9 +1,12 @@
 ---
 import type { Lang } from '../i18n/ui';
 import { useTranslations } from '../i18n/ui';
+import { useToolTranslations } from '../i18n/tools';
+import { FOOTER_TOOLS, toolPath, toolsIndexPath } from '../lib/tools';
 interface Props { lang: Lang; }
 const { lang } = Astro.props;
 const t = useTranslations(lang).footer;
+const tools = useToolTranslations(lang).tools;
 const year = new Date().getFullYear();
 const base = lang === 'en' ? '/en' : '';
 const privacyPath = lang === 'en' ? '/en/privacy' : '/privacy';
@@ -34,6 +37,13 @@ const termsPath   = lang === 'en' ? '/en/terms'   : '/terms';
         <a href={`${base}/#how-it-works`}>{t.howItWorks}</a>
         <a href={`${base}/#pricing`}>{t.pricing}</a>
         <a href={`${base}/#faq`}>{t.faq}</a>
+      </div>
+      <div class="footer__nav-col">
+        <span class="footer__nav-heading">{t.tools}</span>
+        {FOOTER_TOOLS.map(slug => (
+          <a href={toolPath(slug, lang)}>{tools[slug].cardTitle}</a>
+        ))}
+        <a href={toolsIndexPath(lang)} class="footer__nav-all">{t.allTools}</a>
       </div>
       <div class="footer__nav-col">
         <span class="footer__nav-heading">{t.legal}</span>
@@ -98,7 +108,7 @@ const termsPath   = lang === 'en' ? '/en/terms'   : '/terms';
 
 .footer__nav {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 32px;
 }
 
@@ -125,6 +135,11 @@ const termsPath   = lang === 'en' ? '/en/terms'   : '/terms';
   width: fit-content;
 }
 .footer__nav-col a:hover { color: var(--text); }
+
+.footer__nav-all {
+  color: var(--cyan) !important;
+  font-weight: 600;
+}
 
 .footer__bottom {
   border-top: 1px solid var(--border);

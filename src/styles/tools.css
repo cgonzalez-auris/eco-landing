@@ -1,0 +1,331 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   Estilos compartidos por los widgets de /tools. Van en un CSS global, y no
+   en el <style> de cada componente, porque los estilos de Astro son scoped:
+   trece widgets repitiendo el mismo campo de formulario no tendría sentido.
+   Todos los colores salen de las variables de global.css.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Los widgets muestran y ocultan bloques con el atributo `hidden`, y casi todas
+   las clases de aquí traen display:flex, que gana al display:none del navegador.
+   Sin esta regla, los paneles vacíos se ven desde el primer momento. */
+[hidden] {
+  display: none !important;
+}
+
+.tool-widget {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ─── Campos ─────────────────────────────────────────────────────────── */
+.tool-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.tool-row > * { flex: 1 1 180px; }
+
+.tool-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.tool-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.tool-input,
+.tool-select,
+.tool-textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border-hi);
+  background: rgba(255 255 255 / 0.03);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  transition: border-color 0.15s, background 0.15s;
+}
+.tool-input:focus-visible,
+.tool-select:focus-visible,
+.tool-textarea:focus-visible {
+  outline: none;
+  border-color: var(--cyan);
+  background: rgba(255 255 255 / 0.05);
+}
+.tool-textarea {
+  min-height: 150px;
+  resize: vertical;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.tool-select {
+  appearance: none;
+  cursor: pointer;
+  /* Flecha dibujada con un gradiente para no cargar una imagen por un chevron. */
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--text-muted) 50%),
+    linear-gradient(135deg, var(--text-muted) 50%, transparent 50%);
+  background-position: calc(100% - 19px) 50%, calc(100% - 14px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 36px;
+}
+.tool-select option { background: var(--bg-surface); color: var(--text); }
+
+.tool-range { width: 100%; accent-color: var(--cyan); }
+
+.tool-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.tool-checkbox input { accent-color: var(--cyan); width: 16px; height: 16px; }
+
+/* ─── Botones ────────────────────────────────────────────────────────── */
+.tool-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tool-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 18px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border-hi);
+  background: rgba(255 255 255 / 0.04);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, opacity 0.15s;
+}
+.tool-btn:hover:not(:disabled) { border-color: var(--cyan); background: var(--cyan-dim); }
+.tool-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.tool-btn--primary {
+  background: linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%);
+  border-color: transparent;
+  color: #fff;
+}
+.tool-btn--primary:hover:not(:disabled) { border-color: transparent; opacity: 0.9; }
+
+.tool-btn--danger { border-color: rgba(251 191 36 / 0.4); color: var(--amber); }
+.tool-btn--danger:hover:not(:disabled) { background: rgba(251 191 36 / 0.1); border-color: var(--amber); }
+
+/* ─── Zona de carga de archivos ──────────────────────────────────────── */
+.tool-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 28px 20px;
+  border: 1.5px dashed var(--border-hi);
+  border-radius: var(--r-md);
+  background: rgba(255 255 255 / 0.02);
+  color: var(--text-muted);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.tool-drop:hover,
+.tool-drop.is-over {
+  border-color: var(--cyan);
+  background: var(--cyan-dim);
+  color: var(--text);
+}
+.tool-drop__main { font-size: 15px; font-weight: 600; color: var(--text); }
+.tool-drop__sub { font-size: 13px; }
+.tool-drop input[type='file'] { display: none; }
+
+.tool-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: rgba(255 255 255 / 0.03);
+  font-size: 14px;
+}
+.tool-file__name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tool-file__meta { color: var(--text-faint); font-size: 12px; white-space: nowrap; }
+
+/* ─── Resultados ─────────────────────────────────────────────────────── */
+.tool-output {
+  width: 100%;
+  min-height: 170px;
+  max-height: 380px;
+  overflow: auto;
+  padding: 14px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: rgba(0 0 0 / 0.25);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.tool-result {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 20px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--border-hi);
+  background: var(--cyan-dim);
+}
+.tool-result__label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.tool-result__value {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 4vw, 36px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--white-glow);
+  line-height: 1.1;
+}
+.tool-result__hint { font-size: 13px; color: var(--text-muted); }
+
+.tool-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 12px;
+}
+
+/* ─── Avisos ─────────────────────────────────────────────────────────── */
+.tool-note {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-faint);
+}
+
+.tool-alert {
+  padding: 11px 14px;
+  border-radius: var(--r-sm);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+.tool-alert--warn {
+  border: 1px solid rgba(251 191 36 / 0.3);
+  background: rgba(251 191 36 / 0.08);
+  color: var(--amber);
+}
+.tool-alert--error {
+  border: 1px solid rgba(248 113 113 / 0.35);
+  background: rgba(248 113 113 / 0.08);
+  color: #FCA5A5;
+}
+.tool-alert--ok {
+  border: 1px solid rgba(52 211 153 / 0.3);
+  background: var(--emerald-dim);
+  color: var(--emerald);
+}
+.tool-count {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+/* ─── Tablas ─────────────────────────────────────────────────────────── */
+.tool-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  max-height: 460px;
+  overflow-y: auto;
+}
+.tool-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.tool-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 11px 14px;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.tool-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  vertical-align: top;
+}
+.tool-table tr:last-child td { border-bottom: none; }
+.tool-table__name { color: var(--text); font-weight: 600; }
+
+.tool-code {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: rgba(255 255 255 / 0.06);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--cyan);
+  cursor: pointer;
+  border: none;
+  transition: background 0.15s;
+}
+.tool-code:hover { background: var(--cyan-dim); }
+.tool-code + .tool-code { margin-left: 5px; }
+
+/* ─── Medidor de nivel de audio ──────────────────────────────────────── */
+.tool-meter {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255 255 255 / 0.07);
+  overflow: hidden;
+}
+.tool-meter__fill {
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--emerald), var(--cyan) 70%, var(--amber));
+  transition: width 0.08s linear;
+}

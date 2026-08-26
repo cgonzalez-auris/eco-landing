@@ -1,0 +1,64 @@
+---
+/**
+ * Zona de carga de archivos con arrastrar y soltar. Lee el archivo como texto
+ * y lo publica en un CustomEvent `tool:file`, así que cada widget solo tiene
+ * que escuchar en vez de repetir el mismo cableado de drag and drop.
+ */
+interface Props {
+  id: string;
+  main: string;
+  sub: string;
+  accept?: string;
+}
+const { id, main, sub, accept = '.srt,.vtt,.txt,text/plain' } = Astro.props;
+---
+
+<label class="tool-drop" data-drop id={id}>
+  <span class="tool-drop__main">{main}</span>
+  <span class="tool-drop__sub">{sub}</span>
+  <input type="file" accept={accept} />
+</label>
+
+<script>
+  /**
+   * Un solo listener para todas las zonas de carga de la página: Astro agrupa
+   * este script una vez aunque el componente se use varias veces.
+   */
+  function emit(zone: HTMLElement, name: string, text: string) {
+    zone.dispatchEvent(
+      new CustomEvent('tool:file', { detail: { name, text }, bubbles: true }),
+    );
+  }
+
+  async function readInto(zone: HTMLElement, file: File | undefined) {
+    if (!file) return;
+    try {
+      emit(zone, file.name, await file.text());
+    } catch {
+      emit(zone, file.name, '');
+    }
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-drop]').forEach((zone) => {
+    const input = zone.querySelector<HTMLInputElement>('input[type="file"]');
+
+    input?.addEventListener('change', () => {
+      void readInto(zone, input.files?.[0]);
+      // Permite volver a elegir el mismo archivo después de editarlo fuera.
+      input.value = '';
+    });
+
+    zone.addEventListener('dragover', (event) => {
+      event.preventDefault();
+      zone.classList.add('is-over');
+    });
+
+    zone.addEventListener('dragleave', () => zone.classList.remove('is-over'));
+
+    zone.addEventListener('drop', (event) => {
+      event.preventDefault();
+      zone.classList.remove('is-over');
+      void readInto(zone, event.dataTransfer?.files?.[0]);
+    });
+  });
+</script>

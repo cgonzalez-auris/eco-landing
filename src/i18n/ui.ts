@@ -20,6 +20,7 @@ export const ui = {
       features: 'Características',
       pricing: 'Precios',
       faq: 'FAQ',
+      tools: 'Herramientas',
       download: 'Descargar',
     },
     hero: {
@@ -179,6 +180,8 @@ export const ui = {
       tagline: 'Transcripción y traducción\nen tiempo real para Mac,\niPhone y Android.',
       paddleNote: 'Pagos procesados por Paddle',
       product: 'Producto',
+      tools: 'Herramientas',
+      allTools: 'Ver todas',
       legal: 'Legal',
       support: 'Soporte',
       features: 'Características',
@@ -212,6 +215,7 @@ export const ui = {
       features: 'Features',
       pricing: 'Pricing',
       faq: 'FAQ',
+      tools: 'Tools',
       download: 'Download',
     },
     hero: {
@@ -371,6 +375,8 @@ export const ui = {
       tagline: 'Real-time transcription and\ntranslation for Mac,\niPhone and Android.',
       paddleNote: 'Payments processed by Paddle',
       product: 'Product',
+      tools: 'Tools',
+      allTools: 'See all',
       legal: 'Legal',
       support: 'Support',
       features: 'Features',

@@ -1,0 +1,345 @@
+---
+/**
+ * Armazón de toda página de herramienta: cabecera, el widget que llega por
+ * slot, y debajo el contenido que la hace indexable (intro, pasos, FAQ),
+ * los enlaces cruzados y la vuelta al producto.
+ *
+ * Las páginas de /tools/<slug>.astro no hacen más que elegir el widget: todo
+ * lo demás sale del slug, vía el copy de i18n/tools.
+ */
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../Nav.astro';
+import Footer from '../Footer.astro';
+import ToolJsonLd from './ToolJsonLd.astro';
+import type { Lang } from '../../i18n/ui';
+import { useToolTranslations } from '../../i18n/tools';
+import { type ToolSlug, handlesUserData, toolAlternates, toolPath, toolsIndexPath } from '../../lib/tools';
+import { SITE } from '../../config';
+import '../../styles/global.css';
+import '../../styles/tools.css';
+
+interface Props { lang: Lang; slug: ToolSlug; }
+const { lang, slug } = Astro.props;
+
+const t = useToolTranslations(lang);
+const content = t.tools[slug];
+const chrome = t.chrome;
+const homePath = lang === 'en' ? '/en/' : '/';
+---
+
+<Layout
+  lang={lang}
+  title={content.metaTitle}
+  description={content.metaDescription}
+  canonical={`${SITE.url}${toolPath(slug, lang)}`}
+  alternates={toolAlternates(slug)}
+  productJsonLd={false}
+>
+  <Nav lang={lang} />
+
+  <ToolJsonLd lang={lang} content={content} />
+
+  <main class="tool-page">
+    <div class="container tool-page__inner">
+
+      <nav class="tool-crumbs" aria-label="Breadcrumb">
+        <a href={homePath}>{chrome.breadcrumbHome}</a>
+        <span aria-hidden="true">/</span>
+        <a href={toolsIndexPath(lang)}>{chrome.breadcrumbTools}</a>
+        <span aria-hidden="true">/</span>
+        <span class="tool-crumbs__current">{content.cardTitle}</span>
+      </nav>
+
+      <header class="tool-head">
+        <div class="section-label">{content.eyebrow}</div>
+        <h1 class="tool-head__title">{content.h1}</h1>
+        <p class="tool-head__tagline">{content.tagline}</p>
+        {handlesUserData(slug) && (
+          <p class="tool-head__badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M8 20h8"/></svg>
+            {chrome.localBadge}
+          </p>
+        )}
+      </header>
+
+      <div class="tool-panel glass-card" data-tool={slug}>
+        <slot />
+      </div>
+
+      <div class="tool-prose">
+        {content.intro.map(p => <p>{p}</p>)}
+      </div>
+
+      <section class="tool-section">
+        <h2>{chrome.howToTitle}</h2>
+        <ol class="tool-steps">
+          {content.howTo.map((step, i) => (
+            <li>
+              <span class="tool-steps__n">{String(i + 1).padStart(2, '0')}</span>
+              <span>{step}</span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section class="tool-section" id="faq">
+        <h2>{chrome.faqTitle}</h2>
+        <div class="tool-faq">
+          {content.faq.map(item => (
+            <details class="faq-item" data-faq={item.q}>
+              <summary class="faq-item__q">
+                {item.q}
+                <svg class="faq-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+              </summary>
+              <p class="faq-item__a">{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section class="tool-section">
+        <h2>{chrome.relatedTitle}</h2>
+        <ul class="tool-related">
+          {content.related.map(other => (
+            <li>
+              <a
+                href={toolPath(other, lang)}
+                data-track="related_tool_click"
+                data-track-origen={slug}
+                data-track-destino={other}
+              >
+                <span class="tool-related__title">{t.tools[other].cardTitle}</span>
+                <span class="tool-related__blurb">{t.tools[other].cardBlurb}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <section class="tool-cta glass-card">
+        <h2>{chrome.ctaTitle}</h2>
+        <p>{chrome.ctaSub}</p>
+        <a
+          href={`${homePath}#download`}
+          class="btn btn-primary"
+          data-track="download_cta"
+          data-track-ubicacion="tool"
+          data-track-herramienta={slug}
+        >
+          {chrome.ctaButton}
+        </a>
+        <p class="tool-cta__note">{chrome.ctaNote}</p>
+      </section>
+
+    </div>
+  </main>
+
+  <Footer lang={lang} />
+</Layout>
+
+<script>
+  import { reportToolUse } from '../../lib/tool-analytics';
+
+  // Un solo listener para los botones de cualquier widget: cada uno solo tiene
+  // que marcarse con data-tool-action="lo-que-hace".
+  document.querySelector('[data-tool]')?.addEventListener('click', event => {
+    const action = (event.target as HTMLElement).closest<HTMLElement>('[data-tool-action]');
+    if (action?.dataset.toolAction) reportToolUse(action.dataset.toolAction);
+  });
+</script>
+
+<style>
+.tool-page {
+  padding-top: clamp(96px, 12vw, 130px);
+  padding-bottom: clamp(56px, 7vw, 90px);
+}
+.tool-page__inner {
+  max-width: 780px;
+}
+
+/* ─── Miga de pan ────────────────────────────────────────────────────── */
+.tool-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 28px;
+}
+.tool-crumbs a { transition: color 0.15s; }
+.tool-crumbs a:hover { color: var(--cyan); }
+.tool-crumbs__current { color: var(--text-muted); text-transform: none; letter-spacing: 0; font-size: 12px; }
+
+/* ─── Cabecera ───────────────────────────────────────────────────────── */
+.tool-head__title {
+  font-size: clamp(30px, 4.6vw, 46px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin-block: 12px 14px;
+  line-height: 1.05;
+}
+.tool-head__tagline {
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--text-muted);
+  max-width: 62ch;
+}
+.tool-head__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 16px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(52 211 153 / 0.25);
+  background: var(--emerald-dim);
+  color: var(--emerald);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ─── El widget ──────────────────────────────────────────────────────── */
+.tool-panel {
+  margin-top: 34px;
+  padding: clamp(20px, 3.5vw, 30px);
+}
+
+/* ─── Contenido ──────────────────────────────────────────────────────── */
+.tool-prose {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 52px;
+}
+.tool-prose p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--text-muted);
+}
+
+.tool-section {
+  margin-top: 52px;
+  padding-top: 40px;
+  border-top: 1px solid var(--border);
+}
+.tool-section h2 {
+  font-size: clamp(22px, 2.8vw, 28px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 22px;
+}
+
+.tool-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  list-style: none;
+}
+.tool-steps li {
+  display: flex;
+  gap: 14px;
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: var(--text-muted);
+}
+.tool-steps__n {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cyan);
+  padding-top: 5px;
+}
+
+.tool-faq {
+  display: flex;
+  flex-direction: column;
+}
+
+.tool-related {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+  list-style: none;
+}
+.tool-related a {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  height: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  background: var(--bg-card);
+  transition: border-color 0.15s, background 0.15s;
+}
+.tool-related a:hover { border-color: var(--border-hi); background: rgba(255 255 255 / 0.06); }
+.tool-related__title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.tool-related__blurb { font-size: 13.5px; line-height: 1.6; color: var(--text-muted); }
+
+/* ─── CTA ────────────────────────────────────────────────────────────── */
+.tool-cta {
+  margin-top: 60px;
+  padding: clamp(28px, 4vw, 44px);
+  text-align: center;
+}
+.tool-cta h2 {
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin-bottom: 12px;
+}
+.tool-cta p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  max-width: 52ch;
+  margin-inline: auto;
+  margin-bottom: 24px;
+}
+.tool-cta__note {
+  margin-top: 16px;
+  margin-bottom: 0;
+  font-size: 12.5px;
+  color: var(--text-faint);
+}
+
+/* ─── FAQ, mismo aspecto que en el home ──────────────────────────────── */
+.faq-item {
+  border-bottom: 1px solid var(--border);
+}
+.faq-item__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 18px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  cursor: pointer;
+  list-style: none;
+}
+.faq-item__q::-webkit-details-marker { display: none; }
+.faq-icon { flex-shrink: 0; color: var(--text-faint); transition: transform 0.2s; }
+.faq-item[open] .faq-icon { transform: rotate(180deg); color: var(--cyan); }
+.faq-item__a {
+  padding-bottom: 20px;
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--text-muted);
+  max-width: 68ch;
+}
+</style>

@@ -1,0 +1,71 @@
+---
+/**
+ * Marcado común de las herramientas que transforman un archivo de subtítulos
+ * en otro: zona de carga, cuadro para pegar, controles propios del widget
+ * (slot), salida y botones. La lógica va en lib/subtitle-widget.ts.
+ */
+import FileDrop from './FileDrop.astro';
+import type { Lang } from '../../i18n/ui';
+import { useToolTranslations } from '../../i18n/tools';
+
+interface Props {
+  lang: Lang;
+  /** Identifica la raíz del widget para su script. */
+  id: string;
+  accept?: string;
+}
+const { lang, id, accept } = Astro.props;
+const u = useToolTranslations(lang).widgets.subtitle;
+
+/** Los <script> de Astro son módulos aparte y no ven el frontmatter, así que
+ *  el copy viaja por un data-*. Es eso o renunciar a los imports del script. */
+const labels = JSON.stringify({
+  parseError: u.parseError,
+  emptyError: u.emptyError,
+  copiedLabel: u.copiedLabel,
+  cuesLabel: u.cuesLabel,
+  cueLabelOne: u.cueLabelOne,
+});
+---
+
+<div class="tool-widget" id={id} data-labels={labels}>
+  <FileDrop id={`${id}-drop`} main={u.dropLabel} sub={u.browseLabel} accept={accept} />
+
+  <div class="tool-file" data-file hidden>
+    <span class="tool-file__name" data-file-name></span>
+    <button type="button" class="tool-btn" data-clear data-tool-action="clear">{u.clearLabel}</button>
+  </div>
+
+  <div class="tool-field">
+    <label class="tool-label" for={`${id}-paste`}>{u.pasteLabel}</label>
+    <textarea class="tool-textarea" id={`${id}-paste`} data-paste placeholder={u.pastePlaceholder}></textarea>
+  </div>
+
+  <slot name="controls" />
+
+  <p class="tool-alert tool-alert--error" data-error hidden></p>
+  <p class="tool-alert tool-alert--warn" data-warning hidden></p>
+
+  <div class="tool-field">
+    <div class="tool-output-head">
+      <span class="tool-label">{u.resultLabel}</span>
+      <span class="tool-count" data-count></span>
+    </div>
+    <pre class="tool-output" data-output></pre>
+  </div>
+
+  <div class="tool-actions">
+    <button type="button" class="tool-btn tool-btn--primary" data-download data-tool-action="download">{u.downloadLabel}</button>
+    <button type="button" class="tool-btn" data-copy data-tool-action="copy">{u.copyLabel}</button>
+  </div>
+</div>
+
+<style>
+.tool-output-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 7px;
+}
+</style>

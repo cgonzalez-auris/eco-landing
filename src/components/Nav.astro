@@ -1,6 +1,7 @@
 ---
 import type { Lang } from '../i18n/ui';
 import { useTranslations } from '../i18n/ui';
+import { toolsIndexPath } from '../lib/tools';
 
 interface Props { lang: Lang; }
 const { lang } = Astro.props;
@@ -18,6 +19,7 @@ const base = lang === 'en' ? '/en' : '';
       <a href={`${base}/#features`}>{t.nav.features}</a>
       <a href={`${base}/#pricing`}>{t.nav.pricing}</a>
       <a href={`${base}/#faq`}>{t.nav.faq}</a>
+      <a href={toolsIndexPath(lang)}>{t.nav.tools}</a>
     </nav>
 
     <div class="nav__actions">
