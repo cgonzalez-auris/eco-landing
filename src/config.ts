@@ -19,6 +19,7 @@ export const UMAMI = {
   websiteId: '3df672e0-3060-4153-a2cf-b67ea104dd04',
 } as const;
 
+
 /**
  * `astro build` corre en modo production tanto en producción como en los
  * previews de Vercel, así que import.meta.env.PROD no distingue entre ambos.
@@ -36,6 +37,13 @@ export const IS_PRODUCTION = __ANALYTICS_ENABLED__;
  * heredara un build de producción y empezara a contaminar las métricas.
  */
 export const PRODUCTION_HOSTS = ['ecotranslate.app', 'www.ecotranslate.app'] as const;
+/**
+ * Dominios desde los que Umami tiene permitido enviar. Hace falta porque el script cuenta las
+ * visitas por su cuenta, sin pasar por `track()`: la comprobación de hostname de analytics.ts
+ * frena los eventos propios pero no las páginas vistas. Y staging.ecotranslate.app resultó ser
+ * un alias del mismo deployment de producción, así que el script llegaba también allí.
+ */
+export const UMAMI_DOMAINS = PRODUCTION_HOSTS.join(',');
 
 /**
  * Descargas. La landing enlaza siempre `/download/mac`, que vercel.json redirige

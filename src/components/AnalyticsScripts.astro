@@ -1,6 +1,6 @@
 ---
 import Analytics from '@vercel/analytics/astro';
-import { UMAMI, IS_PRODUCTION } from '../config';
+import { UMAMI, UMAMI_DOMAINS, IS_PRODUCTION } from '../config';
 
 /**
  * Único punto donde se inyecta analítica. La condición se evalúa en tiempo de
@@ -18,6 +18,7 @@ import { UMAMI, IS_PRODUCTION } from '../config';
         defer
         src={UMAMI.scriptUrl}
         data-website-id={UMAMI.websiteId}
+        data-domains={UMAMI_DOMAINS}
       />
     </>
   )
