@@ -57,8 +57,7 @@ const base = lang === 'en' ? '/en' : '';
           data-track-tienda="app_store"
           data-track-ubicacion="hero"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11.5" fill="#0D96F6"/><g stroke="#fff" stroke-width="1.9" stroke-linecap="round"><path d="M8.1 17.4 14.1 7"/><path d="M9.9 7l6 10.4"/><path d="M6.3 14.1h11.4"/></g></svg>
-          {d.appStore}
+          <img class="store-badge" src={`/badges/app-store-${lang}.svg`} alt={d.appStore} width="120" height="40" />
         </a>
         <a
           href={DOWNLOAD.playStore}
@@ -69,8 +68,7 @@ const base = lang === 'en' ? '/en' : '';
           data-track-tienda="play_store"
           data-track-ubicacion="hero"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="#34A853" d="M3.6 21.4 14 13.3l2.7 2.7-11 6.3c-.8.5-1.7.2-2.1-.9z"/><path fill="#EA4335" d="M3.6 2.6 14 10.7 16.7 8l-11-6.3c-.8-.5-1.7-.2-2.1.9z"/><path fill="#FBBC04" d="m16.7 8 4 2.3c1 .6 1 2.2 0 2.8l-4 2.2-3.1-2.9L16.7 8z"/><path fill="#4285F4" d="M3.6 2.6c-.1.2-.1.4-.1.7v17.4c0 .3 0 .5.1.7L13.6 12 3.6 2.6z"/></svg>
-          {d.playStore}
+          <img class="store-badge store-badge--play" src={`/badges/google-play-${lang}.png`} alt={d.playStore} width="135" height="52" />
         </a>
       </div>
 
@@ -220,15 +218,24 @@ const base = lang === 'en' ? '/en' : '';
 .store-link {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  font-size: 13px;
-  color: var(--text-muted);
   text-decoration: none;
-  transition: color 0.16s ease;
+  opacity: 0.85;
+  transition: opacity 0.16s ease;
 }
 
 .store-link:hover {
-  color: #fff;
+  opacity: 1;
+}
+
+/* Los badges oficiales traen su propio texto y proporciones; se igualan por altura. El de
+   Google incluye un margen transparente que Apple no tiene, de ahí los dos valores. */
+.store-badge {
+  height: 36px;
+  width: auto;
+}
+
+.store-badge--play {
+  height: 48px;
 }
 
 .hero__note {
