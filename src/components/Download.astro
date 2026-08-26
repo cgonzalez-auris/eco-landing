@@ -37,8 +37,14 @@ const t = useTranslations(lang).download;
         data-track-tienda="app_store"
         data-track-ubicacion="seccion_descarga"
       >
-        <svg class="dl-card__logo dl-card__logo--appstore" width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11.5" fill="#0D96F6"/><g stroke="#fff" stroke-width="1.7" stroke-linecap="round"><path d="M8.1 17.4 14.1 7"/><path d="M9.9 7l6 10.4"/><path d="M6.3 14.1h11.4"/><path d="M6.9 17.4h1.2"/></g></svg>
-        <span class="dl-card__title">{t.appStore}</span>
+        <img
+          class="dl-card__badge"
+          src={`/badges/app-store-${lang}.svg`}
+          alt={t.appStore}
+          width="149"
+          height="50"
+          loading="lazy"
+        />
         <span class="dl-card__meta">{t.appStoreMeta}</span>
       </a>
 
@@ -52,8 +58,14 @@ const t = useTranslations(lang).download;
         data-track-tienda="play_store"
         data-track-ubicacion="seccion_descarga"
       >
-        <svg class="dl-card__logo" width="30" height="30" viewBox="0 0 24 24" aria-hidden="true"><path fill="#34A853" d="M3.6 21.4 14 13.3l2.7 2.7-11 6.3c-.8.5-1.7.2-2.1-.9z"/><path fill="#EA4335" d="M3.6 2.6 14 10.7 16.7 8l-11-6.3c-.8-.5-1.7-.2-2.1.9z"/><path fill="#FBBC04" d="m16.7 8 4 2.3c1 .6 1 2.2 0 2.8l-4 2.2-3.1-2.9L16.7 8z"/><path fill="#4285F4" d="M3.6 2.6c-.1.2-.1.4-.1.7v17.4c0 .3 0 .5.1.7L13.6 12 3.6 2.6z"/></svg>
-        <span class="dl-card__title">{t.playStore}</span>
+        <img
+          class="dl-card__badge dl-card__badge--play"
+          src={`/badges/google-play-${lang}.png`}
+          alt={t.playStore}
+          width="168"
+          height="65"
+          loading="lazy"
+        />
         <span class="dl-card__meta">{t.playStoreMeta}</span>
       </a>
     </div>
@@ -96,6 +108,9 @@ const t = useTranslations(lang).download;
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* Centrado vertical: la tarjeta de Mac lleva una línea más que las de tienda, y sin esto
+     las tres crecían a la misma altura dejando el badge pegado arriba. */
+  justify-content: center;
   gap: 6px;
   padding: 28px 20px;
   border-radius: var(--r-lg, 16px);
@@ -124,9 +139,17 @@ const t = useTranslations(lang).download;
   margin-bottom: 6px;
 }
 
-/* Trae su propio fondo de marca, así que no hereda currentColor. */
-.dl-card__logo--appstore {
-  border-radius: 50%;
+/* Los badges oficiales ya llevan su texto y sus proporciones. Se igualan por altura, no por
+   ancho: el de Google incluye un margen propio que Apple no tiene, de ahí los dos valores. */
+.dl-card__badge {
+  height: 44px;
+  width: auto;
+  margin-block: 10px 4px;
+}
+
+.dl-card__badge--play {
+  height: 58px;
+  margin-block: 3px 0;
 }
 
 .dl-card__title {
