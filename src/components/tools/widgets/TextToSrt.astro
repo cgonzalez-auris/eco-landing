@@ -1,0 +1,164 @@
+---
+import Select from '../Select.astro';
+import type { Lang } from '../../../i18n/ui';
+import { useToolTranslations } from '../../../i18n/tools';
+
+interface Props { lang: Lang; }
+const { lang } = Astro.props;
+const w = useToolTranslations(lang).widgets;
+const u = w.textToSrt;
+const s = w.subtitle;
+
+const labels = JSON.stringify({
+  copiedLabel: s.copiedLabel,
+  cuesLabel: s.cuesLabel,
+  cueLabelOne: s.cueLabelOne,
+  emptyHint: u.emptyHint,
+  totalLabel: u.totalLabel,
+});
+---
+
+<div class="tool-widget" id="w-text-to-srt" data-labels={labels}>
+  <div class="tool-field">
+    <label class="tool-label" for="w-text-to-srt-text">{u.textLabel}</label>
+    <textarea class="tool-textarea t2s-text" id="w-text-to-srt-text" data-text placeholder={u.textPlaceholder}></textarea>
+  </div>
+
+  <div class="t2s-controls">
+    <div class="tool-field">
+      <label class="tool-label" for="w-t2s-cps">{u.cpsLabel}</label>
+      <input class="tool-input" type="number" id="w-t2s-cps" data-cps value="17" min="5" max="30" step="1" />
+    </div>
+    <div class="tool-field">
+      <label class="tool-label" for="w-t2s-cpl">{u.charsPerLineLabel}</label>
+      <input class="tool-input" type="number" id="w-t2s-cpl" data-cpl value="42" min="15" max="80" />
+    </div>
+    <div class="tool-field">
+      <label class="tool-label" for="w-t2s-lines">{u.maxLinesLabel}</label>
+      <input class="tool-input" type="number" id="w-t2s-lines" data-lines value="2" min="1" max="4" />
+    </div>
+    <div class="tool-field">
+      <label class="tool-label" for="w-t2s-start">{u.startLabel}</label>
+      <input class="tool-input" type="number" id="w-t2s-start" data-start value="0" min="0" step="0.5" />
+    </div>
+    <div class="tool-field">
+      <label class="tool-label" for="w-t2s-min">{u.minDurationLabel}</label>
+      <input class="tool-input" type="number" id="w-t2s-min" data-min value="1" min="0.2" step="0.1" />
+    </div>
+    <div class="tool-field">
+      <label class="tool-label" for="w-t2s-max">{u.maxDurationLabel}</label>
+      <input class="tool-input" type="number" id="w-t2s-max" data-max value="7" min="1" step="0.5" />
+    </div>
+    <Select
+      lang={lang}
+      id="w-t2s-format"
+      hook="format"
+      label={u.formatLabel}
+      options={[
+        { value: 'srt', label: u.formatSrt },
+        { value: 'vtt', label: u.formatVtt },
+      ]}
+    />
+  </div>
+
+  <div class="tool-field">
+    <div class="t2s-output-head">
+      <span class="tool-label">{s.resultLabel}</span>
+      <span class="tool-count" data-count></span>
+    </div>
+    <pre class="tool-output" data-output></pre>
+  </div>
+
+  <div class="tool-actions">
+    <button type="button" class="tool-btn tool-btn--primary" data-download data-tool-action="download" disabled>{s.downloadLabel}</button>
+    <button type="button" class="tool-btn" data-copy data-tool-action="copy" disabled>{s.copyLabel}</button>
+  </div>
+</div>
+
+<style>
+.t2s-text { min-height: 190px; font-family: var(--font-body); font-size: 15px; }
+.t2s-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+  gap: 14px;
+}
+.t2s-output-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 7px;
+}
+</style>
+
+<script>
+  import { type SubtitleFormat, formatTimestamp, serialize, textToCues } from '../../../lib/subtitles';
+  import { copyText, downloadText, flashLabel, pluralize } from '../../../lib/download';
+  import { reportToolUseOnce } from '../../../lib/tool-analytics';
+
+  const root = document.getElementById('w-text-to-srt');
+
+  if (root) {
+    const labels = JSON.parse(root.dataset.labels ?? '{}');
+    const text = root.querySelector<HTMLTextAreaElement>('[data-text]');
+    const output = root.querySelector<HTMLElement>('[data-output]');
+    const count = root.querySelector<HTMLElement>('[data-count]');
+    const copyBtn = root.querySelector<HTMLButtonElement>('[data-copy]');
+    const downloadBtn = root.querySelector<HTMLButtonElement>('[data-download]');
+    const format = root.querySelector<HTMLInputElement>('[data-format]');
+
+    const number = (hook: string, fallback: number) =>
+      Number(root.querySelector<HTMLInputElement>(`[data-${hook}]`)?.value) || fallback;
+
+    let result = '';
+
+    function render() {
+      const value = text?.value ?? '';
+      const target = (format?.value === 'vtt' ? 'vtt' : 'srt') as SubtitleFormat;
+
+      const cues = textToCues(value, {
+        maxCharsPerLine: number('cpl', 42),
+        maxLines: number('lines', 2),
+        cps: number('cps', 17),
+        minDurationMs: number('min', 1) * 1000,
+        maxDurationMs: number('max', 7) * 1000,
+        startMs: number('start', 0) * 1000,
+      });
+
+      if (!cues.length) {
+        result = '';
+        if (output) output.textContent = '';
+        if (count) count.textContent = value.trim() ? '' : labels.emptyHint;
+        if (copyBtn) copyBtn.disabled = true;
+        if (downloadBtn) downloadBtn.disabled = true;
+        return;
+      }
+
+      reportToolUseOnce('build');
+      result = serialize(cues, target);
+      if (output) output.textContent = result;
+      if (count) {
+        const total = formatTimestamp(cues[cues.length - 1].end, 'srt').slice(0, 8);
+        count.textContent = `${pluralize(cues.length, labels.cuesLabel, labels.cueLabelOne)} · ${labels.totalLabel} ${total}`;
+      }
+      if (copyBtn) copyBtn.disabled = false;
+      if (downloadBtn) downloadBtn.disabled = false;
+    }
+
+    root.querySelectorAll<HTMLElement>('textarea, input').forEach(el => {
+      el.addEventListener('input', render);
+      el.addEventListener('change', render);
+    });
+
+    copyBtn?.addEventListener('click', async () => {
+      if (result && (await copyText(result))) flashLabel(copyBtn, labels.copiedLabel);
+    });
+
+    downloadBtn?.addEventListener('click', () => {
+      if (!result) return;
+      downloadText(format?.value === 'vtt' ? 'subtitles.vtt' : 'subtitles.srt', result);
+    });
+
+    render();
+  }
+</script>
