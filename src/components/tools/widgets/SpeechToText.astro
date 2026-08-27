@@ -38,6 +38,16 @@ const labels = JSON.stringify({
 ---
 
 <div class="tool-widget" id="w-stt" data-labels={labels}>
+  <p class="stt-scope">
+    {u.scopeNote}{' '}
+    <a
+      href={lang === 'en' ? '/en/#download' : '/#download'}
+      data-track="download_cta"
+      data-track-ubicacion="tool_scope"
+      data-track-herramienta="speech-to-text"
+    >{u.scopeCta}</a>
+  </p>
+
   <p class="tool-alert tool-alert--error" data-error hidden></p>
 
   <div class="tool-row">
@@ -76,6 +86,23 @@ const labels = JSON.stringify({
 </div>
 
 <style>
+.stt-scope {
+  padding: 12px 15px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--cyan);
+  background: rgba(255 255 255 / 0.03);
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+.stt-scope a {
+  color: var(--cyan);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .stt-status {
   display: inline-flex;
   align-items: center;

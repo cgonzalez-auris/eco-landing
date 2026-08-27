@@ -82,6 +82,21 @@ export interface ToolsWidgets {
     readonly modeLines: string;
     readonly modeParagraphs: string;
   };
+  readonly textToSrt: {
+    readonly textLabel: string;
+    readonly textPlaceholder: string;
+    readonly cpsLabel: string;
+    readonly charsPerLineLabel: string;
+    readonly maxLinesLabel: string;
+    readonly startLabel: string;
+    readonly minDurationLabel: string;
+    readonly maxDurationLabel: string;
+    readonly formatLabel: string;
+    readonly formatSrt: string;
+    readonly formatVtt: string;
+    readonly totalLabel: string;
+    readonly emptyHint: string;
+  };
   readonly sync: {
     readonly shiftLabel: string;
     readonly shiftHint: string;
@@ -145,6 +160,9 @@ export interface ToolsWidgets {
     readonly downloadSrt: string;
     readonly clearLabel: string;
     readonly engineNote: string;
+    /** Lo que esta herramienta no hace, dicho antes de que se descubra solo. */
+    readonly scopeNote: string;
+    readonly scopeCta: string;
   };
   readonly tts: {
     readonly textLabel: string;
