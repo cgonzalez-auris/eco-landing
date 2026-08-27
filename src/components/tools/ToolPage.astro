@@ -13,7 +13,7 @@ import Footer from '../Footer.astro';
 import ToolJsonLd from './ToolJsonLd.astro';
 import type { Lang } from '../../i18n/ui';
 import { useToolTranslations } from '../../i18n/tools';
-import { type ToolSlug, handlesUserData, toolAlternates, toolPath, toolsIndexPath } from '../../lib/tools';
+import { type ToolSlug, toolAlternates, toolPath, toolsIndexPath } from '../../lib/tools';
 import { SITE } from '../../config';
 import '../../styles/global.css';
 import '../../styles/tools.css';
@@ -54,12 +54,6 @@ const homePath = lang === 'en' ? '/en/' : '/';
         <div class="section-label">{content.eyebrow}</div>
         <h1 class="tool-head__title">{content.h1}</h1>
         <p class="tool-head__tagline">{content.tagline}</p>
-        {handlesUserData(slug) && (
-          <p class="tool-head__badge">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M8 20h8"/></svg>
-            {chrome.localBadge}
-          </p>
-        )}
       </header>
 
       <div class="tool-panel glass-card" data-tool={slug}>
@@ -187,19 +181,6 @@ const homePath = lang === 'en' ? '/en/' : '/';
   line-height: 1.65;
   color: var(--text-muted);
   max-width: 62ch;
-}
-.tool-head__badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  margin-top: 16px;
-  padding: 5px 12px;
-  border-radius: 999px;
-  border: 1px solid rgba(52 211 153 / 0.25);
-  background: var(--emerald-dim);
-  color: var(--emerald);
-  font-size: 12px;
-  font-weight: 600;
 }
 
 /* ─── El widget ──────────────────────────────────────────────────────── */

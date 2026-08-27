@@ -7,7 +7,6 @@ export const toolsEs: ToolsDict = {
     howToTitle: 'Cómo se usa',
     faqTitle: 'Preguntas frecuentes',
     relatedTitle: 'Herramientas relacionadas',
-    localBadge: 'Se ejecuta en tu navegador',
     ctaTitle: 'Esto es lo que Eco hace en vivo.',
     ctaSub: 'Estas utilidades trabajan sobre archivos que ya tienes. Eco transcribe y traduce mientras el audio suena: reuniones, clases, videos en otro idioma.',
     ctaButton: 'Descargar Eco gratis',
@@ -18,7 +17,7 @@ export const toolsEs: ToolsDict = {
     metaDescription: '13 herramientas gratuitas que funcionan dentro de tu navegador: convertir SRT a VTT, sincronizar subtítulos, dictar por voz, texto a voz, códigos de idioma y calculadoras de transcripción. Sin registro y sin subir archivos.',
     eyebrow: 'Herramientas gratuitas',
     title: 'Subtítulos, voz e idiomas.\nGratis y sin registro.',
-    sub: 'Las utilidades que fuimos necesitando mientras construíamos Eco. Todas son gratis y todas se ejecutan dentro de tu navegador: los archivos que abres no salen de tu equipo.',
+    sub: 'Las utilidades que fuimos necesitando mientras construíamos Eco. Gratis, sin registro y sin nada que instalar.',
     countLabel: '13 herramientas',
   },
   categories: {
@@ -28,6 +27,10 @@ export const toolsEs: ToolsDict = {
     calculators: 'Calculadoras',
   },
   widgets: {
+    combo: {
+      searchPlaceholder: 'Buscar…',
+      noResults: 'Ninguna opción coincide.',
+    },
     subtitle: {
       dropLabel: 'Arrastra tu archivo aquí',
       browseLabel: 'o haz clic para elegirlo',
@@ -217,10 +220,6 @@ export const toolsEs: ToolsDict = {
         'Enlázalo desde tu reproductor con <track kind="subtitles" src="subtitulos.vtt" srclang="es">.',
       ],
       faq: [
-        {
-          q: '¿Se sube mi archivo a algún servidor?',
-          a: 'No. La conversión ocurre entera dentro de tu navegador con JavaScript. El archivo nunca se envía a ninguna parte, así que puedes convertir material confidencial sin problema.',
-        },
         {
           q: '¿Cuál es la diferencia real entre SRT y VTT?',
           a: 'VTT exige la cabecera WEBVTT al principio del archivo y usa un punto en lugar de una coma para los milisegundos (00:00:01.500 en vez de 00:00:01,500). Además admite estilos CSS, posicionamiento de las líneas y metadatos que SRT no contempla. Para el uso normal, la conversión es directa.',

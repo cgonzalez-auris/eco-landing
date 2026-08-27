@@ -80,21 +80,6 @@ export function toolAlternates(slug: ToolSlug): { es: string; en: string } {
 
 export const TOOLS_INDEX_ALTERNATES = { es: '/tools', en: '/en/tools' } as const;
 
-/**
- * Herramientas en las que el usuario pone algo suyo — un archivo, su voz, un
- * texto. Solo ahí tiene sentido el sello de que nada se sube: en una
- * calculadora o en una tabla de códigos no significa nada.
- */
-const HANDLES_USER_DATA = new Set<ToolSlug>([
-  ...slugsIn('subtitles'),
-  ...slugsIn('voice'),
-  'language-detector',
-]);
-
-export function handlesUserData(slug: ToolSlug): boolean {
-  return HANDLES_USER_DATA.has(slug);
-}
-
 /** Las que se destacan en el footer, presente en todas las páginas del sitio. */
 export const FOOTER_TOOLS: readonly ToolSlug[] = [
   'srt-to-vtt',

@@ -7,7 +7,6 @@ export const toolsEn: ToolsDict = {
     howToTitle: 'How to use it',
     faqTitle: 'Frequently asked questions',
     relatedTitle: 'Related tools',
-    localBadge: 'Runs in your browser',
     ctaTitle: 'This is what Eco does live.',
     ctaSub: 'These utilities work on files you already have. Eco transcribes and translates while the audio is still playing: meetings, classes, videos in another language.',
     ctaButton: 'Download Eco free',
@@ -18,7 +17,7 @@ export const toolsEn: ToolsDict = {
     metaDescription: '13 free tools that run inside your browser: convert SRT to VTT, sync subtitles, dictate by voice, text to speech, language codes and transcription calculators. No signup, no uploads.',
     eyebrow: 'Free tools',
     title: 'Subtitles, speech and languages.\nFree, with no signup.',
-    sub: 'The utilities we kept needing while building Eco. All free, all running inside your browser: the files you open never leave your machine.',
+    sub: 'The utilities we kept needing while building Eco. Free, no signup, nothing to install.',
     countLabel: '13 tools',
   },
   categories: {
@@ -28,6 +27,10 @@ export const toolsEn: ToolsDict = {
     calculators: 'Calculators',
   },
   widgets: {
+    combo: {
+      searchPlaceholder: 'Search…',
+      noResults: 'No option matches.',
+    },
     subtitle: {
       dropLabel: 'Drag your file here',
       browseLabel: 'or click to choose one',
@@ -217,10 +220,6 @@ export const toolsEn: ToolsDict = {
         'Link it from your player with <track kind="subtitles" src="subtitles.vtt" srclang="en">.',
       ],
       faq: [
-        {
-          q: 'Is my file uploaded anywhere?',
-          a: 'No. The conversion happens entirely in your browser with JavaScript. The file is never sent anywhere, so you can convert confidential material safely.',
-        },
         {
           q: 'What is the actual difference between SRT and VTT?',
           a: 'VTT requires a WEBVTT header at the top of the file and uses a period rather than a comma for milliseconds (00:00:01.500 instead of 00:00:01,500). It also supports CSS styling, cue positioning and metadata that SRT has no concept of. For everyday use the conversion is direct.',

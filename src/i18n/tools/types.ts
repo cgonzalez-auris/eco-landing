@@ -35,7 +35,6 @@ export interface ToolsChrome {
   readonly howToTitle: string;
   readonly faqTitle: string;
   readonly relatedTitle: string;
-  readonly localBadge: string;
   readonly ctaTitle: string;
   readonly ctaSub: string;
   readonly ctaButton: string;
@@ -72,6 +71,11 @@ export interface SubtitleUi {
 }
 
 export interface ToolsWidgets {
+  /** Textos del desplegable propio, compartido por todos los widgets. */
+  readonly combo: {
+    readonly searchPlaceholder: string;
+    readonly noResults: string;
+  };
   readonly subtitle: SubtitleUi;
   readonly plain: {
     readonly formatLabel: string;
