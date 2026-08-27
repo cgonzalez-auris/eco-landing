@@ -1,5 +1,6 @@
 ---
 import FileDrop from '../FileDrop.astro';
+import Select from '../Select.astro';
 import type { Lang } from '../../../i18n/ui';
 import { useToolTranslations } from '../../../i18n/tools';
 
@@ -42,21 +43,27 @@ const labels = JSON.stringify({
   </div>
 
   <div class="tool-row">
-    <div class="tool-field">
-      <label class="tool-label" for="w-bilingual-order">{u.orderLabel}</label>
-      <select class="tool-select" id="w-bilingual-order" data-order>
-        <option value="original">{u.orderOriginalFirst}</option>
-        <option value="translation">{u.orderTranslationFirst}</option>
-      </select>
-    </div>
-    <div class="tool-field">
-      <label class="tool-label" for="w-bilingual-sep">{u.separatorLabel}</label>
-      <select class="tool-select" id="w-bilingual-sep" data-separator>
-        <option value="">{u.separatorNone}</option>
-        <option value="- ">- </option>
-        <option value="— ">— </option>
-      </select>
-    </div>
+    <Select
+      lang={lang}
+      id="w-bilingual-order"
+      hook="order"
+      label={u.orderLabel}
+      options={[
+        { value: 'original', label: u.orderOriginalFirst },
+        { value: 'translation', label: u.orderTranslationFirst },
+      ]}
+    />
+    <Select
+      lang={lang}
+      id="w-bilingual-sep"
+      hook="separator"
+      label={u.separatorLabel}
+      options={[
+        { value: '', label: u.separatorNone },
+        { value: '- ', label: '-' },
+        { value: '— ', label: '—' },
+      ]}
+    />
   </div>
 
   <p class="tool-alert tool-alert--error" data-error hidden></p>
@@ -100,8 +107,8 @@ const labels = JSON.stringify({
 
   if (root) {
     const labels = JSON.parse(root.dataset.labels ?? '{}');
-    const order = root.querySelector<HTMLSelectElement>('[data-order]');
-    const separator = root.querySelector<HTMLSelectElement>('[data-separator]');
+    const order = root.querySelector<HTMLInputElement>('[data-order]');
+    const separator = root.querySelector<HTMLInputElement>('[data-separator]');
     const output = root.querySelector<HTMLElement>('[data-output]');
     const count = root.querySelector<HTMLElement>('[data-count]');
     const errorBox = root.querySelector<HTMLElement>('[data-error]');

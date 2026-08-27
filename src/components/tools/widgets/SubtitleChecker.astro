@@ -1,5 +1,6 @@
 ---
 import FileDrop from '../FileDrop.astro';
+import Select from '../Select.astro';
 import type { Lang } from '../../../i18n/ui';
 import { useToolTranslations } from '../../../i18n/tools';
 
@@ -42,14 +43,17 @@ const presets = JSON.stringify({
     <span class="tool-file__meta" data-file-meta></span>
   </div>
 
-  <div class="tool-field">
-    <label class="tool-label" for="w-checker-preset">{u.presetLabel}</label>
-    <select class="tool-select" id="w-checker-preset" data-preset>
-      <option value="netflix">{u.presetNetflix}</option>
-      <option value="bbc">{u.presetBbc}</option>
-      <option value="custom">{u.presetCustom}</option>
-    </select>
-  </div>
+  <Select
+    lang={lang}
+    id="w-checker-preset"
+    hook="preset"
+    label={u.presetLabel}
+    options={[
+      { value: 'netflix', label: u.presetNetflix },
+      { value: 'bbc', label: u.presetBbc },
+      { value: 'custom', label: u.presetCustom },
+    ]}
+  />
 
   <div class="checker-limits">
     <div class="tool-field">
@@ -109,7 +113,8 @@ const presets = JSON.stringify({
   if (root) {
     const labels = JSON.parse(root.dataset.labels ?? '{}');
     const presets = JSON.parse(root.dataset.presets ?? '{}');
-    const presetSelect = root.querySelector<HTMLSelectElement>('[data-preset]');
+    const presetInput = root.querySelector<HTMLInputElement>('[data-preset]');
+    const presetCombo = presetInput?.closest<HTMLElement>('[data-combo]');
     const limits = Array.from(root.querySelectorAll<HTMLInputElement>('[data-limit]'));
     const fileRow = root.querySelector<HTMLElement>('[data-file]');
     const fileName = root.querySelector<HTMLElement>('[data-file-name]');
@@ -198,8 +203,8 @@ const presets = JSON.stringify({
       check();
     });
 
-    presetSelect?.addEventListener('change', () => {
-      const preset = presets[presetSelect.value];
+    presetInput?.addEventListener('change', () => {
+      const preset = presets[presetInput.value];
       if (!preset) return;
       limits.forEach(input => {
         const value = preset[input.dataset.limit ?? ''];
@@ -211,7 +216,9 @@ const presets = JSON.stringify({
     // Tocar un límite a mano deja de ser la norma elegida.
     limits.forEach(input =>
       input.addEventListener('input', () => {
-        if (presetSelect) presetSelect.value = 'custom';
+        presetCombo?.dispatchEvent(
+          new CustomEvent('combo:value', { detail: { value: 'custom' } }),
+        );
         check();
       }),
     );

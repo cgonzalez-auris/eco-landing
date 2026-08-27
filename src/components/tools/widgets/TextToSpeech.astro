@@ -1,4 +1,5 @@
 ---
+import Select from '../Select.astro';
 import type { Lang } from '../../../i18n/ui';
 import { useToolTranslations } from '../../../i18n/tools';
 
@@ -23,10 +24,7 @@ const labels = JSON.stringify({
     <textarea class="tool-textarea tts-text" id="w-tts-text" data-text placeholder={u.textPlaceholder}></textarea>
   </div>
 
-  <div class="tool-field">
-    <label class="tool-label" for="w-tts-voice">{u.voiceLabel}</label>
-    <select class="tool-select" id="w-tts-voice" data-voice></select>
-  </div>
+  <Select lang={lang} id="w-tts-voice" hook="voice" label={u.voiceLabel} searchable options={[]} placeholder={u.noVoices} />
 
   <div class="tool-row">
     <div class="tool-field">
@@ -59,7 +57,8 @@ const labels = JSON.stringify({
   if (root) {
     const labels = JSON.parse(root.dataset.labels ?? '{}');
     const text = root.querySelector<HTMLTextAreaElement>('[data-text]');
-    const voiceSelect = root.querySelector<HTMLSelectElement>('[data-voice]');
+    const voiceInput = root.querySelector<HTMLInputElement>('[data-voice]');
+    const voiceCombo = voiceInput?.closest<HTMLElement>('[data-combo]');
     const rate = root.querySelector<HTMLInputElement>('[data-rate]');
     const pitch = root.querySelector<HTMLInputElement>('[data-pitch]');
     const rateValue = root.querySelector<HTMLElement>('[data-rate-value]');
@@ -81,24 +80,25 @@ const labels = JSON.stringify({
 
       function loadVoices() {
         voices = synth.getVoices();
-        if (!voiceSelect) return;
+        if (!voiceCombo) return;
 
-        if (!voices.length) {
-          // Chrome devuelve la lista vacía en la primera llamada y avisa después.
-          voiceSelect.innerHTML = `<option>${labels.noVoices}</option>`;
-          return;
-        }
+        // Chrome devuelve la lista vacía en la primera llamada y avisa después.
+        if (!voices.length) return;
 
         const pageLang = document.documentElement.lang || 'es';
-        voiceSelect.innerHTML = voices
-          .map(
-            (voice, i) =>
-              `<option value="${i}">${voice.name} — ${voice.lang}${voice.default ? ' ★' : ''}</option>`,
-          )
-          .join('');
-
         const preferred = voices.findIndex(voice => voice.lang.startsWith(pageLang));
-        if (preferred >= 0) voiceSelect.value = String(preferred);
+
+        voiceCombo.dispatchEvent(
+          new CustomEvent('combo:options', {
+            detail: {
+              options: voices.map((voice, i) => ({
+                value: String(i),
+                label: `${voice.name} — ${voice.lang}${voice.default ? ' ★' : ''}`,
+              })),
+              value: String(preferred >= 0 ? preferred : 0),
+            },
+          }),
+        );
       }
 
       loadVoices();
@@ -136,7 +136,7 @@ const labels = JSON.stringify({
         if (!value) return;
 
         const utterance = new SpeechSynthesisUtterance(value);
-        const voice = voices[Number(voiceSelect?.value)];
+        const voice = voices[Number(voiceInput?.value)];
         if (voice) {
           utterance.voice = voice;
           utterance.lang = voice.lang;

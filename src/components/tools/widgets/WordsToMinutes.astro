@@ -1,4 +1,5 @@
 ---
+import Select from '../Select.astro';
 import type { Lang } from '../../../i18n/ui';
 import { useToolTranslations } from '../../../i18n/tools';
 import { SPEECH_RATES } from '../../../lib/speech-rate';
@@ -24,13 +25,16 @@ const labels = JSON.stringify({
 ---
 
 <div class="tool-widget" id="w-wpm" data-labels={labels}>
-  <div class="tool-field">
-    <label class="tool-label" for="w-wpm-mode">{u.modeLabel}</label>
-    <select class="tool-select" id="w-wpm-mode" data-mode>
-      <option value="words">{u.modeFromWords}</option>
-      <option value="minutes">{u.modeFromMinutes}</option>
-    </select>
-  </div>
+  <Select
+    lang={lang}
+    id="w-wpm-mode"
+    hook="mode"
+    label={u.modeLabel}
+    options={[
+      { value: 'words', label: u.modeFromWords },
+      { value: 'minutes', label: u.modeFromMinutes },
+    ]}
+  />
 
   <div class="tool-row">
     <div class="tool-field" data-input="words">
@@ -43,23 +47,27 @@ const labels = JSON.stringify({
       <input class="tool-input" type="number" id="w-wpm-minutes" data-minutes value="10" min="1" step="1" />
     </div>
 
-    <div class="tool-field">
-      <label class="tool-label" for="w-wpm-lang">{u.langLabel}</label>
-      <select class="tool-select" id="w-wpm-lang" data-lang>
-        {languages.map(language => (
-          <option value={language.code} selected={language.code === lang}>{language.label}</option>
-        ))}
-      </select>
-    </div>
+    <Select
+      lang={lang}
+      id="w-wpm-lang"
+      hook="lang"
+      label={u.langLabel}
+      value={lang}
+      options={languages.map(language => ({ value: language.code, label: language.label }))}
+    />
 
-    <div class="tool-field">
-      <label class="tool-label" for="w-wpm-pace">{u.paceLabel}</label>
-      <select class="tool-select" id="w-wpm-pace" data-pace>
-        <option value="slow">{u.paceSlow}</option>
-        <option value="normal" selected>{u.paceNormal}</option>
-        <option value="fast">{u.paceFast}</option>
-      </select>
-    </div>
+    <Select
+      lang={lang}
+      id="w-wpm-pace"
+      hook="pace"
+      label={u.paceLabel}
+      value="normal"
+      options={[
+        { value: 'slow', label: u.paceSlow },
+        { value: 'normal', label: u.paceNormal },
+        { value: 'fast', label: u.paceFast },
+      ]}
+    />
   </div>
 
   <div class="tool-results-grid">
@@ -86,11 +94,11 @@ const labels = JSON.stringify({
 
   if (root) {
     const labels = JSON.parse(root.dataset.labels ?? '{}');
-    const mode = root.querySelector<HTMLSelectElement>('[data-mode]');
+    const mode = root.querySelector<HTMLInputElement>('[data-mode]');
     const words = root.querySelector<HTMLInputElement>('[data-words]');
     const minutes = root.querySelector<HTMLInputElement>('[data-minutes]');
-    const langSelect = root.querySelector<HTMLSelectElement>('[data-lang]');
-    const pace = root.querySelector<HTMLSelectElement>('[data-pace]');
+    const langSelect = root.querySelector<HTMLInputElement>('[data-lang]');
+    const pace = root.querySelector<HTMLInputElement>('[data-pace]');
     const wordsField = root.querySelector<HTMLElement>('[data-input="words"]');
     const minutesField = root.querySelector<HTMLElement>('[data-input="minutes"]');
 

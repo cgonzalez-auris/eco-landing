@@ -1,4 +1,5 @@
 ---
+import Select from '../Select.astro';
 import type { Lang } from '../../../i18n/ui';
 import { useToolTranslations } from '../../../i18n/tools';
 
@@ -20,14 +21,18 @@ const labels = JSON.stringify({
       <input class="tool-input" type="number" id="w-transcription-minutes" data-minutes value="60" min="1" step="5" />
     </div>
 
-    <div class="tool-field">
-      <label class="tool-label" for="w-transcription-quality">{u.qualityLabel}</label>
-      <select class="tool-select" id="w-transcription-quality" data-quality>
-        <option value="clean">{u.qualityClean}</option>
-        <option value="normal" selected>{u.qualityNormal}</option>
-        <option value="hard">{u.qualityHard}</option>
-      </select>
-    </div>
+    <Select
+      lang={lang}
+      id="w-transcription-quality"
+      hook="quality"
+      label={u.qualityLabel}
+      value="normal"
+      options={[
+        { value: 'clean', label: u.qualityClean },
+        { value: 'normal', label: u.qualityNormal },
+        { value: 'hard', label: u.qualityHard },
+      ]}
+    />
   </div>
 
   <div class="tool-results-grid">
@@ -59,7 +64,7 @@ const labels = JSON.stringify({
 
   if (root) {
     const minutes = root.querySelector<HTMLInputElement>('[data-minutes]');
-    const quality = root.querySelector<HTMLSelectElement>('[data-quality]');
+    const quality = root.querySelector<HTMLInputElement>('[data-quality]');
 
     const write = (selector: string, value: string) => {
       const el = root.querySelector<HTMLElement>(selector);

@@ -1,5 +1,6 @@
 ---
 import SubtitleShell from '../SubtitleShell.astro';
+import Select from '../Select.astro';
 import type { Lang } from '../../../i18n/ui';
 import { useToolTranslations } from '../../../i18n/tools';
 
@@ -9,13 +10,17 @@ const u = useToolTranslations(lang).widgets.plain;
 ---
 
 <SubtitleShell lang={lang} id="w-srt-to-text" accept=".srt,.vtt,.txt,text/plain">
-  <div class="tool-field" slot="controls">
-    <label class="tool-label" for="w-srt-to-text-mode">{u.formatLabel}</label>
-    <select class="tool-select" id="w-srt-to-text-mode" data-mode>
-      <option value="paragraphs">{u.modeParagraphs}</option>
-      <option value="lines">{u.modeLines}</option>
-    </select>
-  </div>
+  <Select
+    slot="controls"
+    lang={lang}
+    id="w-srt-to-text-mode"
+    hook="mode"
+    label={u.formatLabel}
+    options={[
+      { value: 'paragraphs', label: u.modeParagraphs },
+      { value: 'lines', label: u.modeLines },
+    ]}
+  />
 </SubtitleShell>
 
 <script>
@@ -23,7 +28,7 @@ const u = useToolTranslations(lang).widgets.plain;
   import { plainText } from '../../../lib/subtitles';
 
   const root = document.getElementById('w-srt-to-text');
-  const mode = document.querySelector<HTMLSelectElement>('#w-srt-to-text-mode');
+  const mode = document.querySelector<HTMLInputElement>('[data-mode]');
 
   if (root) {
     const widget = initSubtitleWidget({

@@ -1,5 +1,6 @@
 ---
 import SubtitleShell from '../SubtitleShell.astro';
+import Select from '../Select.astro';
 import type { Lang } from '../../../i18n/ui';
 import { useToolTranslations } from '../../../i18n/tools';
 
@@ -8,6 +9,10 @@ const { lang } = Astro.props;
 const u = useToolTranslations(lang).widgets.sync;
 
 const FPS = ['23.976', '24', '25', '29.97', '30'];
+const fpsOptions = [
+  { value: '', label: u.fpsNone },
+  ...FPS.map(fps => ({ value: fps, label: `${fps} fps` })),
+];
 const config = JSON.stringify({ negativeWarning: u.negativeWarning });
 ---
 
@@ -20,20 +25,20 @@ const config = JSON.stringify({ negativeWarning: u.negativeWarning });
     </div>
 
     <div class="tool-row">
-      <div class="tool-field">
-        <label class="tool-label" for="w-sync-from">{u.fpsLabel} — {u.fpsFrom}</label>
-        <select class="tool-select" id="w-sync-from" data-fps-from>
-          <option value="">{u.fpsNone}</option>
-          {FPS.map(f => <option value={f}>{f} fps</option>)}
-        </select>
-      </div>
-      <div class="tool-field">
-        <label class="tool-label" for="w-sync-to">{u.fpsLabel} — {u.fpsTo}</label>
-        <select class="tool-select" id="w-sync-to" data-fps-to>
-          <option value="">{u.fpsNone}</option>
-          {FPS.map(f => <option value={f}>{f} fps</option>)}
-        </select>
-      </div>
+      <Select
+        lang={lang}
+        id="w-sync-from"
+        hook="fps-from"
+        label={`${u.fpsLabel} — ${u.fpsFrom}`}
+        options={fpsOptions}
+      />
+      <Select
+        lang={lang}
+        id="w-sync-to"
+        hook="fps-to"
+        label={`${u.fpsLabel} — ${u.fpsTo}`}
+        options={fpsOptions}
+      />
     </div>
 
     <div class="sync-preview" data-preview hidden>
@@ -83,8 +88,8 @@ const config = JSON.stringify({ negativeWarning: u.negativeWarning });
   const root = document.getElementById('w-subtitle-sync');
   const controls = document.querySelector<HTMLElement>('[data-sync-config]');
   const shift = document.querySelector<HTMLInputElement>('[data-shift]');
-  const fpsFrom = document.querySelector<HTMLSelectElement>('[data-fps-from]');
-  const fpsTo = document.querySelector<HTMLSelectElement>('[data-fps-to]');
+  const fpsFrom = document.querySelector<HTMLInputElement>('[data-fps-from]');
+  const fpsTo = document.querySelector<HTMLInputElement>('[data-fps-to]');
   const preview = document.querySelector<HTMLElement>('[data-preview]');
   const previewBefore = document.querySelector<HTMLElement>('[data-preview-before]');
   const previewAfter = document.querySelector<HTMLElement>('[data-preview-after]');
@@ -127,6 +132,7 @@ const config = JSON.stringify({ negativeWarning: u.negativeWarning });
       },
     });
 
-    [shift, fpsFrom, fpsTo].forEach(el => el?.addEventListener('input', widget.rerun));
+    shift?.addEventListener('input', widget.rerun);
+    [fpsFrom, fpsTo].forEach(el => el?.addEventListener('change', widget.rerun));
   }
 </script>

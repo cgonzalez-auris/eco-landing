@@ -1,0 +1,253 @@
+---
+/**
+ * Desplegable propio. El <select> nativo no se puede estilar por dentro: al
+ * abrirlo aparece la lista del sistema operativo, que no se parece en nada al
+ * resto del sitio y que además no admite buscador, algo que hace falta en
+ * cuanto hay treinta idiomas o ciento ochenta voces.
+ *
+ * Por fuera se comporta como un <select>: el valor vive en un input oculto que
+ * lleva los mismos data-* que llevaba el select, y al elegir una opción se
+ * dispara un `change` que burbujea. Los widgets no se enteran del cambio.
+ */
+import type { Lang } from '../../i18n/ui';
+import { useToolTranslations } from '../../i18n/tools';
+
+export interface SelectOption {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  lang: Lang;
+  id: string;
+  label: string;
+  options?: SelectOption[];
+  value?: string;
+  /** Por defecto, buscador a partir de diez opciones. */
+  searchable?: boolean;
+  /** El atributo con el que el widget lo localiza, p. ej. "lang" para data-lang. */
+  hook: string;
+  /** Para las listas que se rellenan en cliente, como las voces del sistema. */
+  placeholder?: string;
+}
+
+const {
+  lang,
+  id,
+  label,
+  options = [],
+  value,
+  searchable,
+  hook,
+  placeholder = '',
+} = Astro.props;
+
+const u = useToolTranslations(lang).widgets.combo;
+const selected = options.find(option => option.value === value) ?? options[0];
+const withSearch = searchable ?? options.length >= 10;
+---
+
+<div class="tool-combo" data-combo data-combo-search-enabled={withSearch ? 'true' : 'false'}>
+  <span class="tool-label" id={`${id}-label`}>{label}</span>
+
+  <button
+    type="button"
+    class="tool-combo__button"
+    id={`${id}-button`}
+    aria-haspopup="listbox"
+    aria-expanded="false"
+    aria-controls={`${id}-panel`}
+    aria-labelledby={`${id}-label ${id}-button`}
+    data-combo-button
+  >
+    <span class="tool-combo__value" data-combo-value>{selected?.label ?? placeholder}</span>
+    <svg class="tool-combo__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+
+  <input type="hidden" value={selected?.value ?? ''} data-combo-input {...{ [`data-${hook}`]: true }} />
+
+  <div class="tool-combo__panel" id={`${id}-panel`} data-combo-panel hidden>
+    {withSearch && (
+      <input
+        type="search"
+        class="tool-combo__search"
+        placeholder={u.searchPlaceholder}
+        autocomplete="off"
+        aria-label={u.searchPlaceholder}
+        data-combo-search
+      />
+    )}
+    <ul class="tool-combo__list" role="listbox" aria-labelledby={`${id}-label`} data-combo-list>
+      {options.map(option => (
+        <li
+          class="tool-combo__option"
+          role="option"
+          data-value={option.value}
+          aria-selected={option.value === selected?.value ? 'true' : 'false'}
+        >
+          {option.label}
+        </li>
+      ))}
+    </ul>
+    <p class="tool-combo__empty" data-combo-empty hidden>{u.noResults}</p>
+  </div>
+</div>
+
+<script>
+  /**
+   * Un solo script para todos los desplegables de la página: Astro lo agrupa
+   * una vez aunque el componente se use diez veces.
+   */
+  type Option = { value: string; label: string };
+
+  function setup(combo: HTMLElement) {
+    const button = combo.querySelector<HTMLButtonElement>('[data-combo-button]');
+    const valueEl = combo.querySelector<HTMLElement>('[data-combo-value]');
+    const input = combo.querySelector<HTMLInputElement>('[data-combo-input]');
+    const panel = combo.querySelector<HTMLElement>('[data-combo-panel]');
+    const search = combo.querySelector<HTMLInputElement>('[data-combo-search]');
+    const list = combo.querySelector<HTMLElement>('[data-combo-list]');
+    const empty = combo.querySelector<HTMLElement>('[data-combo-empty]');
+    if (!button || !valueEl || !input || !panel || !list) return;
+
+    const optionEls = () =>
+      Array.from(list.querySelectorAll<HTMLElement>('[role="option"]')).filter(el => !el.hidden);
+
+    function open() {
+      panel!.hidden = false;
+      button!.setAttribute('aria-expanded', 'true');
+      if (search) {
+        search.value = '';
+        filter('');
+        search.focus();
+      }
+      // Que la opción activa quede a la vista, no perdida a mitad de lista.
+      const active = list!.querySelector<HTMLElement>('[aria-selected="true"]');
+      active?.scrollIntoView({ block: 'nearest' });
+      if (!search) active?.focus();
+    }
+
+    function close(focusButton = true) {
+      panel!.hidden = true;
+      button!.setAttribute('aria-expanded', 'false');
+      if (focusButton) button!.focus();
+    }
+
+    function apply(option: HTMLElement) {
+      for (const el of list!.querySelectorAll('[role="option"]')) {
+        el.setAttribute('aria-selected', 'false');
+      }
+      option.setAttribute('aria-selected', 'true');
+      valueEl!.textContent = option.textContent?.trim() ?? '';
+      input!.value = option.dataset.value ?? '';
+    }
+
+    function select(option: HTMLElement) {
+      apply(option);
+      // Los widgets escuchan `change` en el input, igual que hacían con el select.
+      input!.dispatchEvent(new Event('change', { bubbles: true }));
+      close();
+    }
+
+    function filter(query: string) {
+      const needle = query.trim().toLowerCase();
+      let visible = 0;
+      for (const el of list!.querySelectorAll<HTMLElement>('[role="option"]')) {
+        const match = !needle || (el.textContent ?? '').toLowerCase().includes(needle);
+        el.hidden = !match;
+        if (match) visible++;
+      }
+      if (empty) empty.hidden = visible > 0;
+    }
+
+    /** Mueve el resaltado con las flechas sin cambiar aún el valor. */
+    function move(step: number) {
+      const options = optionEls();
+      if (!options.length) return;
+      const current = options.findIndex(el => el.classList.contains('is-active'));
+      const next = Math.max(0, Math.min(options.length - 1, (current < 0 ? -1 : current) + step));
+      options.forEach(el => el.classList.remove('is-active'));
+      options[next].classList.add('is-active');
+      options[next].scrollIntoView({ block: 'nearest' });
+    }
+
+    button.addEventListener('click', () => (panel.hidden ? open() : close()));
+
+    list.addEventListener('click', event => {
+      const option = (event.target as HTMLElement).closest<HTMLElement>('[role="option"]');
+      if (option) select(option);
+    });
+
+    search?.addEventListener('input', () => {
+      filter(search.value);
+      list.querySelectorAll('.is-active').forEach(el => el.classList.remove('is-active'));
+      move(1);
+    });
+
+    combo.addEventListener('keydown', event => {
+      if (panel.hidden) {
+        if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          open();
+        }
+        return;
+      }
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        close();
+      } else if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        move(1);
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        move(-1);
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        const active = list.querySelector<HTMLElement>('.is-active') ?? optionEls()[0];
+        if (active) select(active);
+      }
+    });
+
+    document.addEventListener('click', event => {
+      if (!panel.hidden && !combo.contains(event.target as Node)) close(false);
+    });
+
+    /** Cambiar el valor desde el widget, sin disparar `change` ni cerrar nada. */
+    combo.addEventListener('combo:value', event => {
+      const { value } = (event as CustomEvent<{ value: string }>).detail;
+      const option = list.querySelector<HTMLElement>(
+        `[role="option"][data-value="${CSS.escape(value)}"]`,
+      );
+      if (option) apply(option);
+    });
+
+    /** Habilitar o deshabilitar, p. ej. mientras el dictado está en marcha. */
+    combo.addEventListener('combo:disabled', event => {
+      const { disabled } = (event as CustomEvent<{ disabled: boolean }>).detail;
+      button.disabled = disabled;
+      if (disabled && !panel.hidden) close(false);
+    });
+
+    /**
+     * Para las listas que no se conocen hasta que carga la página, como las
+     * voces que tenga instalado el sistema.
+     */
+    combo.addEventListener('combo:options', event => {
+      const detail = (event as CustomEvent<{ options: Option[]; value?: string }>).detail;
+      const chosen = detail.options.find(o => o.value === detail.value) ?? detail.options[0];
+
+      list.innerHTML = detail.options
+        .map(
+          option =>
+            `<li class="tool-combo__option" role="option" data-value="${option.value}" aria-selected="${option.value === chosen?.value}">${option.label}</li>`,
+        )
+        .join('');
+
+      valueEl.textContent = chosen?.label ?? '';
+      input.value = chosen?.value ?? '';
+      if (empty) empty.hidden = detail.options.length > 0;
+    });
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-combo]').forEach(setup);
+</script>
