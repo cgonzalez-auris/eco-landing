@@ -15,7 +15,7 @@ Landing page de [Eco](https://ecotranslate.app) — aplicación macOS de transcr
 ```
 src/
   components/       # Nav, Hero, Features, HowItWorks, Pricing, FAQ, Footer
-    tools/          # Armazón de /tools + los 13 widgets
+    tools/          # Armazón de /tools + los 14 widgets
   i18n/
     ui.ts           # Copy del sitio, ES + EN
     tools/          # Copy de las herramientas, ES + EN
@@ -48,7 +48,7 @@ public/
 
 ## Herramientas gratuitas
 
-`/tools` reúne trece utilidades de subtítulos, voz e idiomas, cada una en su propia URL y en los dos idiomas. Se ejecutan enteras en el navegador: no hay backend. Están ahí por SEO — atacan keywords que busca el mismo público que necesita Eco — y todas enlazan de vuelta al producto.
+`/tools` reúne catorce utilidades de subtítulos, voz e idiomas, cada una en su propia URL y en los dos idiomas. No hay backend: todo se resuelve en el cliente. Están ahí por SEO — atacan keywords que busca el mismo público que necesita Eco — y todas enlazan de vuelta al producto.
 
 Cómo añadir una nueva: ver `CLAUDE.md`.
 
@@ -73,7 +73,7 @@ Todo el copy vive en `src/i18n/`: `ui.ts` para el sitio y `tools/{es,en}.ts` par
 - `robots.txt` apuntando al sitemap
 - JSON-LD: `SoftwareApplication` en Layout, `FAQPage` en FAQ, y `WebApplication` + `FAQPage` + `BreadcrumbList` en cada herramienta
 - Meta descriptions y títulos localizados, propios de cada página
-- 38 URLs indexables entre los dos idiomas
+- 40 URLs indexables entre los dos idiomas
 
 ## Deploy
 
