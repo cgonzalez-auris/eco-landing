@@ -21,6 +21,15 @@ export const UMAMI = {
 
 
 /**
+ * Meta Pixel (medición de anuncios en Facebook e Instagram). Sin ID no se
+ * inyecta nada. El ID no es secreto, pero llega por variable de entorno
+ * (PUBLIC_META_PIXEL_ID en Vercel) para no atarlo al repositorio.
+ */
+export const META_PIXEL = {
+  id: import.meta.env.PUBLIC_META_PIXEL_ID ?? '',
+} as const;
+
+/**
  * `astro build` corre en modo production tanto en producción como en los
  * previews de Vercel, así que import.meta.env.PROD no distingue entre ambos.
  * VERCEL_ENV sí, pero no se puede leer con import.meta.env: Vite solo expone al

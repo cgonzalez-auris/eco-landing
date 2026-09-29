@@ -33,6 +33,9 @@ function isProductionHost(): boolean {
   return PRODUCTION_HOSTS.includes(location.hostname);
 }
 
+/** Clics de descarga que se reportan a Meta como `Lead`. */
+const META_LEAD_EVENTS = new Set(['download_click', 'store_click']);
+
 export function track(event: string, props?: TrackProps): void {
   const data = clean(props);
 
@@ -58,5 +61,19 @@ export function track(event: string, props?: TrackProps): void {
     window.va?.('event', { name: event, data });
   } catch {
     /* Vercel Analytics bloqueado o aún sin cargar */
+  }
+
+  // window.fbq solo existe si MetaPixel.astro lo cargó (visita desde un anuncio
+  // de Meta, sin DNT/GPC, con ID configurado). Un clic de descarga es el
+  // evento de conversión que la landing puede ver; el registro y el pago
+  // ocurren dentro de las apps.
+  if (META_LEAD_EVENTS.has(event)) {
+    try {
+      window.fbq?.('track', 'Lead', {
+        content_name: String(data.plataforma ?? data.tienda ?? 'descarga'),
+      });
+    } catch {
+      /* Pixel bloqueado */
+    }
   }
 }

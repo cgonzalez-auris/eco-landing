@@ -1,5 +1,6 @@
 ---
 import Analytics from '@vercel/analytics/astro';
+import MetaPixel from './MetaPixel.astro';
 import { UMAMI, UMAMI_DOMAINS, IS_PRODUCTION } from '../config';
 
 /**
@@ -20,6 +21,7 @@ import { UMAMI, UMAMI_DOMAINS, IS_PRODUCTION } from '../config';
         data-website-id={UMAMI.websiteId}
         data-domains={UMAMI_DOMAINS}
       />
+      <MetaPixel />
     </>
   )
 }

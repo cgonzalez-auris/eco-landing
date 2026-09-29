@@ -1,0 +1,55 @@
+---
+import { META_PIXEL } from '../config';
+
+/**
+ * Meta Pixel condicionado. Se inyecta solo si hay ID configurado y, en el
+ * navegador, solo cuando se cumplen TODAS estas condiciones:
+ *   - host de producción,
+ *   - sin señal DNT ni Global Privacy Control,
+ *   - la visita viene de un anuncio de Meta (utm_source=meta o fbclid), que se
+ *     recuerda en sessionStorage para el resto de la sesión.
+ * Así las visitas orgánicas nunca se comparten con Meta, lo que sostiene lo que
+ * dice la política de privacidad (sección 4.6).
+ */
+const { id } = META_PIXEL;
+---
+
+{
+  id && (
+    <script is:inline define:vars={{ pixelId: id }}>
+      (function () {
+        if (['ecotranslate.app', 'www.ecotranslate.app'].indexOf(location.hostname) === -1) return;
+        if (navigator.doNotTrack === '1' || navigator.globalPrivacyControl) return;
+
+        var fromMeta = false;
+        try {
+          var q = new URLSearchParams(location.search);
+          fromMeta = q.get('utm_source') === 'meta' || q.has('fbclid');
+          if (fromMeta) sessionStorage.setItem('eco_meta_ad', '1');
+          else fromMeta = sessionStorage.getItem('eco_meta_ad') === '1';
+        } catch (e) {}
+        if (!fromMeta) return;
+
+        !(function (f, b, e, v, n, t, s) {
+          if (f.fbq) return;
+          n = f.fbq = function () {
+            n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+          };
+          if (!f._fbq) f._fbq = n;
+          n.push = n;
+          n.loaded = !0;
+          n.version = '2.0';
+          n.queue = [];
+          t = b.createElement(e);
+          t.async = !0;
+          t.src = v;
+          s = b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t, s);
+        })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+
+        fbq('init', pixelId);
+        fbq('track', 'PageView');
+      })();
+    </script>
+  )
+}
